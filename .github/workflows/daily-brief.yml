@@ -26,7 +26,8 @@ jobs:
       - name: Initialize directories
         run: |
           mkdir -p data logs output docs/archive
-          ls -la
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Run collector
         env:
@@ -45,6 +46,13 @@ jobs:
           FEISHU_WEBHOOK_URL: ${{ secrets.FEISHU_WEBHOOK_URL }}
           FEISHU_SECRET: ${{ secrets.FEISHU_SECRET }}
         run: python scripts/feishu_push.py output/brief_$(date +%Y-%m-%d).md || true
+
+      - name: Commit backfilled brief files (if any new)
+        run: |
+          git add output/brief_*.md 2>/dev/null || true
+          git diff --staged --quiet || git commit -m "📄 brief $(date +%Y-%m-%d)"
+          git pull --rebase || true
+          git push || true
 
       - name: Generate HTML dashboard
         run: python scripts/generate_pages.py
