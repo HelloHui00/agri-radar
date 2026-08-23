@@ -27,7 +27,16 @@ def load_server_cfg():
 
 
 def get_proxy():
-    """Return proxy URL from config/env/None."""
+    """Return proxy URL. Disabled on Linux (no local clash) unless explicitly enabled."""
+    import platform
+    if platform.system() == "Linux":
+        # 在 Linux (包括 GitHub Actions runner) 上没有 clash 代理可用
+        # 显式启用也只适用于自建服务器部署
+        cfg_proxy = load_server_cfg().get("proxy", {})
+        if cfg_proxy.get("enabled") and cfg_proxy.get("http_proxy"):
+            return cfg_proxy["http_proxy"]
+        return None
+    # Windows: 优先 config，然后 env
     cfg = load_server_cfg()
     p = cfg.get("proxy", {})
     if p.get("enabled") and (p.get("http_proxy") or p.get("https_proxy")):
