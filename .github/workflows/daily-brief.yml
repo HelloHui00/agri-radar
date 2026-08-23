@@ -1,0 +1,90 @@
+name: Daily Brief & Pages Update
+
+on:
+  schedule:
+    # 每天 07:30 北京时间 (23:30 UTC 前一天)
+    - cron: '30 23 * * *'
+  workflow_dispatch:  # 允许手动触发
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+env:
+  AGRI_RADAR_DB: /tmp/agri_radar.db
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Download previous DB (for dedup history)
+        uses: actions/cache@v4
+        with:
+          path: data/agri_radar.db
+          key: agri-radar-db-${{ github.run_id }}
+          restore-keys: |
+            agri-radar-db-
+
+      - name: Initialize directories
+        run: |
+          mkdir -p data logs output docs/archive
+
+      - name: Run collector
+        env:
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+        run: |
+          python scripts/collect.py > data/run_$(date +%Y%m%d_%H%M).jsonl
+          python scripts/ingest.py data/run_$(date +%Y%m%d_%H%M).jsonl
+
+      - name: Generate brief
+        env:
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+        run: python scripts/brief.py
+
+      - name: Push to Feishu
+        env:
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          FEISHU_WEBHOOK_URL: ${{ secrets.FEISHU_WEBHOOK_URL }}
+          FEISHU_SECRET: ${{ secrets.FEISHU_SECRET }}
+        run: |
+          python scripts/feishu_push.py output/brief_$(date +%Y-%m-%d).md
+
+      - name: Generate HTML dashboard
+        run: python scripts/generate_pages.py
+
+      - name: Commit dashboard updates
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/
+          git diff --staged --quiet || git commit -m "📄 Daily brief ${{ env.DATE }}"
+          git push
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download updated docs/
+        uses: actions/download-artifact@v4
+        with:
+          name: docs-output
+          path: docs/
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/
+
+      - id: deployment
+        uses: actions/deploy-pages@v4

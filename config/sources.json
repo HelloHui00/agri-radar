@@ -1,0 +1,229 @@
+[
+  {
+    "type": "rss_category",
+    "name": "期刊-RSE/ISPRS/TGRS/JSTARS 最新论文",
+    "tags": ["journal"],
+    "base_weight": 5,
+    "enabled": true,
+    "proxy": true,
+    "journals": [
+      {"issn": "0034-4257", "name": "Remote Sensing of Environment"},
+      {"issn": "0924-2716", "name": "ISPRS J Photogrammetry & RS"},
+      {"issn": "0196-2892", "name": "IEEE TGRS"},
+      {"issn": "1939-1404", "name": "IEEE JSTARS"}
+    ]
+  },
+  {
+    "type": "google_news",
+    "name": "科研动态-遥感前沿机构(中文)",
+    "tags": ["institution"],
+    "base_weight": 4,
+    "enabled": true,
+    "proxy": true,
+    "lang": "zh-CN",
+    "gl": "CN",
+    "ceid": "CN:zh-Hans",
+    "queries": [
+      "中科院空天信息院 遥感",
+      "武汉大学遥感信息工程 成果",
+      "北京师范大学 遥感 团队",
+      "中国农科院 遥感"
+    ]
+  },
+  {
+    "type": "google_news",
+    "name": "科研动态-遥感前沿机构(英文)",
+    "tags": ["institution"],
+    "base_weight": 4,
+    "enabled": true,
+    "proxy": true,
+    "lang": "en-US",
+    "gl": "US",
+    "ceid": "US:en",
+    "queries": [
+      "University of Maryland remote sensing",
+      "NASA JPL Earth science research",
+      "ESA ESRIN research news"
+    ]
+  },
+  {
+    "type": "google_news",
+    "name": "产业界-吉林一号/长光卫星",
+    "tags": ["industry_satellite"],
+    "base_weight": 5,
+    "enabled": true,
+    "proxy": true,
+    "lang": "zh-CN",
+    "gl": "CN",
+    "ceid": "CN:zh-Hans",
+    "queries": ["吉林一号 卫星", "长光卫星 发射"]
+  },
+  {
+    "type": "google_news",
+    "name": "产业界-Planet Labs",
+    "tags": ["industry_satellite"],
+    "base_weight": 5,
+    "enabled": true,
+    "proxy": true,
+    "lang": "en-US",
+    "gl": "US",
+    "ceid": "US:en",
+    "queries": ["Planet Labs agriculture", "Planet Labs SkySat"]
+  },
+  {
+    "type": "google_news",
+    "name": "产业界-Maxar/Vantor",
+    "tags": ["industry_satellite"],
+    "base_weight": 5,
+    "enabled": true,
+    "proxy": true,
+    "lang": "en-US",
+    "gl": "US",
+    "ceid": "US:en",
+    "queries": ["Vantor satellite", "Maxar agriculture remote sensing"]
+  },
+  {
+    "type": "google_news",
+    "name": "产业界-欧空局Sentinel",
+    "tags": ["industry_satellite"],
+    "base_weight": 4,
+    "enabled": true,
+    "proxy": true,
+    "lang": "zh-CN",
+    "gl": "CN",
+    "ceid": "CN:zh-Hans",
+    "queries": ["Sentinel-3 农业", "欧空局 Sentinel 遥感"]
+  },
+  {
+    "type": "google_news",
+    "name": "政府部门-农业政策",
+    "tags": ["gov"],
+    "base_weight": 3,
+    "enabled": true,
+    "proxy": true,
+    "lang": "zh-CN",
+    "gl": "CN",
+    "ceid": "CN:zh-Hans",
+    "queries": [
+      "农业农村部 遥感 监测",
+      "省农业厅 旱情 遥感",
+      "农科院 遥感 项目",
+      "农业灾情 预警 遥感"
+    ]
+  },
+  {
+    "type": "google_news",
+    "name": "政府部门-全球农业预警",
+    "tags": ["gov"],
+    "base_weight": 4,
+    "enabled": true,
+    "proxy": true,
+    "lang": "en-US",
+    "gl": "US",
+    "ceid": "US:en",
+    "queries": [
+      "crop forecast government",
+      "agricultural warning ministry",
+      "drought monitoring government country",
+      "crop monitoring system Japan Brazil EU"
+    ]
+  },
+  {
+    "type": "google_news",
+    "name": "政府部门-亚太农业部",
+    "tags": ["gov"],
+    "base_weight": 3,
+    "enabled": true,
+    "proxy": true,
+    "lang": "en-US",
+    "gl": "US",
+    "ceid": "US:en",
+    "queries": [
+      "Japan MAFF agriculture",
+      "Thailand Rice Department",
+      "Vietnam MARD crop"
+    ]
+  },
+  {
+    "type": "google_news",
+    "name": "政府部门-拉美农业部",
+    "tags": ["gov"],
+    "base_weight": 3,
+    "enabled": true,
+    "proxy": true,
+    "lang": "en-US",
+    "gl": "US",
+    "ceid": "US:en",
+    "queries": [
+      "Brazil Embrapa agriculture",
+      "Argentina MAGyP crop",
+      "Mexico agriculture ministry"
+    ]
+  },
+  {
+    "type": "rss",
+    "name": "中国政府网-农业农村部",
+    "url": "https://www.gov.cn/rss.xml",
+    "tags": ["gov"],
+    "base_weight": 4,
+    "enabled": true
+  },
+  {
+    "type": "google_news",
+    "name": "公司-农业巨头动态",
+    "tags": ["industry_agri_company"],
+    "base_weight": 3,
+    "enabled": true,
+    "proxy": true,
+    "lang": "zh-CN",
+    "gl": "CN",
+    "ceid": "CN:zh-Hans",
+    "queries": [
+      "中粮集团 农业",
+      "先正达 数字农业",
+      "北大荒 农业遥感",
+      "ABCD 四大粮商 粮食"
+    ]
+  },
+  {
+    "type": "google_news",
+    "name": "公司-农业巨头动态(英文)",
+    "tags": ["industry_agri_company"],
+    "base_weight": 3,
+    "enabled": true,
+    "proxy": true,
+    "lang": "en-US",
+    "gl": "US",
+    "ceid": "US:en",
+    "queries": [
+      "Syngenta digital farming",
+      "Cargill agriculture technology",
+      "ADM crop monitoring",
+      "Bunge grain satellite"
+    ]
+  },
+  {
+    "type": "rss",
+    "name": "欧洲航天局 ESA Earth Online",
+    "url": "https://www.esa.int/rssfeed/Our_Activities/Observing_the_Earth",
+    "tags": ["industry_satellite", "institution"],
+    "base_weight": 3,
+    "enabled": true
+  },
+  {
+    "type": "rss",
+    "name": "NASA Science News",
+    "url": "https://science.nasa.gov/feed/",
+    "tags": ["institution"],
+    "base_weight": 3,
+    "enabled": true
+  },
+  {
+    "type": "rss",
+    "name": "FEWS NET (饥荒早期预警)",
+    "url": "https://fews.net/taxonomy/term/44/feed",
+    "tags": ["gov"],
+    "base_weight": 3,
+    "enabled": true
+  }
+]
