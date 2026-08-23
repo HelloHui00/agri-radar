@@ -24,7 +24,9 @@ jobs:
           python-version: '3.11'
 
       - name: Initialize directories
-        run: mkdir -p data logs output docs/archive
+        run: |
+          mkdir -p data logs output docs/archive
+          ls -la
 
       - name: Run collector
         env:
@@ -38,11 +40,11 @@ jobs:
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
         run: python scripts/brief.py
 
-      - name: Push to Feishu
+      - name: Push to Feishu (optional, continue on failure)
         env:
           FEISHU_WEBHOOK_URL: ${{ secrets.FEISHU_WEBHOOK_URL }}
           FEISHU_SECRET: ${{ secrets.FEISHU_SECRET }}
-        run: python scripts/feishu_push.py output/brief_$(date +%Y-%m-%d).md
+        run: python scripts/feishu_push.py output/brief_$(date +%Y-%m-%d).md || true
 
       - name: Generate HTML dashboard
         run: python scripts/generate_pages.py
