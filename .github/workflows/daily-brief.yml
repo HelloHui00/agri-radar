@@ -26,20 +26,29 @@ jobs:
       - name: Initialize directories
         run: |
           mkdir -p data logs output docs/archive
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          ls -la
 
-      - name: Run collector
+      - name: Run collector (with debug)
         env:
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
         run: |
+          set -x
           python scripts/collect.py > data/run_$(date +%Y%m%d_%H%M).jsonl
-          python scripts/ingest.py data/run_$(date +%Y%m%d_%H%M).jsonl
+          ec=$?
+          echo "collect.py exit-code: ${ec}"
+          ls -la data/
+          [ $ec -eq 0 ] || { echo "collect failed"; exit $ec; }
+          test -s data/run_*.jsonl && echo "✓ collect produced output" || { echo "✗ collect empty"; exit 1; }
+          python scripts/ingest.py data/run_*.jsonl
+          echo "ingest exit: $?"
 
-      - name: Generate brief
+      - name: Generate brief (with debug)
         env:
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
-        run: python scripts/brief.py
+        run: |
+          set -x
+          python scripts/brief.py && echo "✓ brief generated" || echo "✗ brief failed"
+          ls -la output/
 
       - name: Push to Feishu (optional, continue on failure)
         env:
@@ -49,13 +58,18 @@ jobs:
 
       - name: Commit backfilled brief files (if any new)
         run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
           git add output/brief_*.md 2>/dev/null || true
           git diff --staged --quiet || git commit -m "📄 brief $(date +%Y-%m-%d)"
           git pull --rebase || true
           git push || true
 
-      - name: Generate HTML dashboard
-        run: python scripts/generate_pages.py
+      - name: Generate HTML dashboard (with debug)
+        run: |
+          set -x
+          python scripts/generate_pages.py
+          ls -la docs/archive/ | head -20
 
       - uses: actions/upload-pages-artifact@v3
         with:
