@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🌾 农业遥感情报中心 · 2026-08-23</title>
+<title>🌾 农业遥感情报中心 · 今日</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
@@ -28,6 +28,18 @@ a { color: #2563eb; }
   .header h1 { font-size: 1.4rem; }
   .card { padding: 1rem 1.2rem; }
 }
+/* Archive page specific */
+.archive-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; margin-top: 1rem; }
+.archive-day { background: white; border: 1px solid #e5e7eb; border-radius: 6px; padding: 1rem; transition: all 0.2s; }
+.archive-day:hover { border-color: #10b981; box-shadow: 0 2px 8px rgba(16,185,129,0.15); transform: translateY(-1px); }
+.archive-date { font-weight: 600; color: #059669; margin-bottom: 0.3rem; }
+.archive-meta { font-size: 0.85rem; color: #6b7280; }
+.stats-bar { display: flex; gap: 2rem; padding: 1rem; background: #ecfdf5; border-radius: 6px; margin: 1.2rem 0; }
+.stat-item { text-align: center; }
+.stat-value { font-size: 1.6rem; font-weight: bold; color: #065f46; }
+.stat-label { font-size: 0.85rem; color: #6b7280; margin-top: 0.2rem; }
+.month-header { color: #374151; font-size: 1.05rem; font-weight: 600; margin-top: 1.8rem; margin-bottom: 0.8rem;
+  padding-bottom: 0.4rem; border-bottom: 2px solid #d1fae5; }
 </style>
 </head>
 <body>
@@ -35,16 +47,18 @@ a { color: #2563eb; }
   <h1>🌾 农业遥感情报中心</h1>
   <div class="date">2026-08-23 · 每日自动更新</div>
 </div>
+
 <div class="nav">
   <div class="nav-inner">
-    <a href="#today">📄 今日简报</a>
-    <a href="#archive">📚 历史归档</a>
+    <a href="index.html">📄 今日简报</a>
+    <a href="archive/index.html">📚 历史归档</a>
     <a href="https://github.com/hellohui00/agri-radar">⭐ GitHub</a>
   </div>
 </div>
+
 <div class="main">
   <div class="card" id="today">
-<div class='content'>好的，这是为您整理的农业遥感情报日报。</p><p><hr></p><p>🌾 农业遥感日报 · 2026-08-23</p><p><h2>【科研】</h2><br><span class="num">1.</span> <strong>水稻叶绿素遥感反演突破“饱和”瓶颈</strong>。针对水稻行结构效应与植被指数饱和问题，提出RiceGORT模型与叶绿素敏感性增强方法，提升卫星影像反演精度。 <a href="https://doi.org/10.1016/j.rse.2026.115581" target="_blank">RSE</a><br><span class="num">2.</span> <strong>散射模型引导的深度学习土壤水分反演框架</strong>。将物理散射模型与深度迁移学习结合，提升地表土壤水分反演的物理可解释性与泛化能力。 <a href="https://doi.org/10.1016/j.rse.2026.115571" target="_blank">RSE</a><br><span class="num">3.</span> <strong>HLS-GPT：大模型重构Landsat与Sentinel-2反射率</strong>。基于生成式预训练Transformer，实现大陆尺度HLS数据在任意日期的全波段无缝重建，对物候与灾害监测意义重大。 <a href="https://doi.org/10.1016/j.isprsjprs.2026.08.006" target="_blank">ISPRS</a><br><span class="num">4.</span> <strong>大豆籽粒蛋白质含量预测新方法</strong>。融合最优窗口植被指数时序与动态冠层生理特征，提升大豆品质遥感估测精度。 <a href="https://doi.org/10.1016/j.isprsjprs.2026.05.052" target="_blank">ISPRS</a><br><span class="num">5.</span> <strong>非洲30米月度火烧迹地产品发布（2017–2025）</strong>。为全球碳循环与农业焚烧监测提供了新的高分辨率长时序数据支撑。 <a href="https://doi.org/10.1016/j.rse.2026.115533" target="_blank">RSE</a></p><p><hr></p><p><h2>【产业界】</h2><br><span class="num">1.</span> <strong>今日暂无产业界板块动态</strong>。吉林一号、Planet Labs、欧空局等源暂无高价值更新。</p><p><hr></p><p><h2>【政府部门】</h2><br><span class="num">1.</span> <strong>乌干达政府发布新气候战略</strong>，旨在减排并提升农民气候韧性，涉及农业适应措施。 <a href="https://news.google.com/rss/articles/CBMi1AFBVV95cUxOcEZVNnl2ek15RzhMeGs4T3ljVXZ5VThVYkhRUl9KMHZyY3REREd4U2RqdG1WazBNY2tDQXBLRjR2YlUwV3EyaEpCVTQ3WEgwenBRY2d5MURTeVpBUGt4U1VvOVNHWGhfa3dQbjBkTzdBNFVmenh2VXhjTVZpa3Q2blNsVFc5eG1TMTVTeU04STB5RmZadWE3QkpZMWMyeF9uZHBLQWpiWW1PZnFKT2pZX0ZRbDJRbGVYYXhlRkRwN1MyTFBIRl9tYVE0NTYtU1NzbWo3RQ?oc=5" target="_blank">Daily Monitor</a><br><span class="num">2.</span> <strong>厄尔尼诺开始影响北美作物天气</strong>。加拿大西部生产者报指出，厄尔尼诺现象已对作物生长气候条件产生实质影响。 <a href="https://news.google.com/rss/articles/CBMiSkFVX3lxTE9aT2pld2pGbURvbnNLRzFRemxURngtSGNELTZYWldOQzJ0aUljLTg0ekxLMU5tTUtuQzc5NnB2elUtS3RRbXNQNXhn?oc=5" target="_blank">The Western Producer</a><br><span class="num">3.</span> <strong>中国台湾南部遭暴雨袭击</strong>，已发布山体滑坡警报，需关注对当地农业生产的影响。 <a href="https://news.google.com/rss/articles/CBMiVkFVX3lxTE5ITzJqanAwaFFqTk5qcVBkYjBTeklZQjlJSlNZeWh1UUdhQUZMZk45OWNFelVnX1pMUzF6eXdGcTZCS3ZyRVI1ZTdzSWljaVNER3E0LS1n?oc=5" target="_blank">Focus Taiwan</a></p><p><hr></p><p><h2>【公司】</h2><br><span class="num">1.</span> <strong>今日暂无公司板块动态</strong>。中粮、先正达、ABCD粮商等源暂无高价值更新。</p><p><hr></p><p><h2>【跟踪】</h2>今日暂无已标记关注点出现新动态。</p><p><hr></p><p>💬 回复反馈：「多推科研」「少推政府」「跟踪水稻」/「第1条展开」</p><p><hr></div>
+<div class='content'>🌾 农业遥感日报 · 2026-08-23</p><p><h2>【科研】</h2><br><span class="num">1.</span> <strong>将非光化学淬灭（NPQ）纳入SIF估算光合碳同化</strong>。针对SIF反演GPP受NPQ干扰的难题，提出改进模型，提升植被生产力遥感估算精度。 <a href="https://doi.org/10.1016/j.rse.2026.115514" target="_blank">RSE</a><br><span class="num">2.</span> <strong>超越RMSE：GEDI反演波形产品可消除现有全球森林高度图中的人工均质化现象</strong>。为森林碳储量与结构监测提供更可靠的全球数据基准。 <a href="https://doi.org/10.1016/j.rse.2026.115591" target="_blank">RSE</a><br><span class="num">3.</span> <strong>基于水文几何信息的无测站流域流量反演算法</strong>。融合ICESat-2与Sentinel-1/2数据，成功应用于青藏高原，为无资料区洪水与水资源监测提供新思路。 <a href="https://doi.org/10.1016/j.rse.2026.115568" target="_blank">RSE</a><br><span class="num">4.</span> <strong>基于递归特征消除BiLSTM的多重插补方法</strong>，实现时空无缝的Landsat NDVI重建，有效填补云污染等数据缺失，支撑长时序植被动态分析。 <a href="https://doi.org/10.1016/j.isprsjprs.2026.05.043" target="_blank">ISPRS</a><br><span class="num">5.</span> <strong>加拿大野火卫星（CanadaFireSat）：面向高分辨率野火预报的多模态方法</strong>。结合多源数据提升野火监测与预警能力，对农业与生态灾害防控具有参考价值。 <a href="https://doi.org/10.1016/j.isprsjprs.2026.05.050" target="_blank">ISPRS</a></p><p><hr></p><p><h2>【产业界】</h2><br><span class="num">1.</span> <strong>中国下一代航母建造进展曝光</strong>。Maxar卫星影像显示船体分段组装取得新进展，反映中国造船工业与国防航天能力持续提升。 <a href="https://news.google.com/rss/articles/CBMid0FVX3lxTFB1RTBoa09YdVZmMFpueTlKY19CWlNSOHZsd3ZOX0JwNTRVa051VVBVVkVmaDJMYTB4cW1CWG1CYm5NdVZSaUlObHZGaThRUHVNWDI3aE1CREdQVFlTV2dUWmw5TVktUjJ5eVpLQS1GS1pQNTBmLVM0?oc=5" target="_blank">Maxar/Vantor</a></p><p><hr></p><p><h2>【政府部门】</h2><br><span class="num">1.</span> <strong>乌干达政府目标：2040年实现150万公顷灌溉面积</strong>。该国正大力推进灌溉基础设施建设以提升农业抗灾能力。 <a href="https://news.google.com/rss/articles/CBMiswFBVV95cUxPbkZkV3huUml1ZTFwMC1KYmxzdnJPN3VKY2N2aGF3dzJ5RlZ1M1ExeUhVcWhWT0Y5MlJ2Njl0NEtadDJORFZWSVNRVDBZckJxNUhwVUUxLTk5YWt3bHhpSnpneDBnZ2VsckhPZmN1eFkxQ0h1MUZqTVVLaGduX1FYTFpWVkFDaGJiUkc4djZvNlM3dzJuS3pIa3RsTUdVV2FwMXNMOWJCbzhRcDYwVkxHNXhWaw?oc=5" target="_blank">Daily Monitor</a><br><span class="num">2.</span> <strong>津巴布韦面临或为有记录以来最严重厄尔尼诺</strong>。该国正积极备战极端干旱对农业生产的冲击。 <a href="https://news.google.com/rss/articles/CBMimwFBVV95cUxPRUtlX1FYYWhjaENtbDJtZ2l3UTczMzZabUZOdUpCM3FGY0dqWmVFVUg1dnB5ZVh0MkFHVFJpZkQxS094bl9EZUJ1VGJESGU1Smp5Zm9uWHIzQnlwWVc3QUNsTmtEeUtmcGktM0czWC1ORlhKNFBiMGhJQi01VW1sTVhMd2hGZ2dHenlNS0ZlSkFSUjZUTGlJVm9paw?oc=5" target="_blank">Herald</a><br><span class="num">3.</span> <strong>印度总理呼吁支持小农户以提高作物产量</strong>。政策重心向小农倾斜，关注粮食安全基础盘。 <a href="https://news.google.com/rss/articles/CBMinAFBVV95cUxQYTdJNkhfaGxodFRyY0YxZHhUcEpBdnRFNU9YUDV6WklsU1NXb3BodE9uOVAzYWVUSXNyQ1BZaVNjQWVrZUpQSFFNX2tMcGJ1SmlGUnU1LTNYemNnak9DMmxObGQ2UzBDWDJFcGVpVDFOaFgydXdQT3ZxYUFxWU1PaDNZbWdrNVpUM0NYMk5Rb0htY0l0bEF6SHdpM2_SAVNBVV95cUxOaGFsQ0U2dHJ1U3lsWHBlbnIyZ2RFNk13cFNNZDV5cWFBWnZIazBfb1N6TWYxTTNNTzFjYnFSeXZOU25FWFBvUmlNN3k3M1pLcmdwSQ?oc=5" target="_blank">Aaj English TV</a><br><span class="num">4.</span> <strong>印度糖价因政府措施回落，白糖进口或缓解供应紧张</strong>。政策调控对稳定农产品市场的作用显现。 <a href="https://news.google.com/rss/articles/CBMiyAFBVV95cUxOdXdvSUw5NnpZNDE2YmZPTmdGbnlvZFpaaVFRRURfME1UeFE5eGhWS2tYQWtETW5HVC05UHpEelRmYzdJVnhqOFhLdTNaZU5zejc3ZTRzaTZvT0Z2bnVIUDRGck82aHluZTBqWXR6YzJEU1Budjd1aFJHVV85U3kxS2p1NlQ4cGVrRVo0RHZpT1h1bkJsdGNja3hqNnlOLS00NGpZVEFlbWlBelBFeUUxeHYtZ19UVkQ1cWtrUk5RNzQ1a3dzWXUtcg?oc=5" target="_blank">ChiniMandi</a></p><p><hr></p><p><h2>【公司】</h2><br>今日暂无公司板块动态。</p><p><hr></p><p><h2>【跟踪】</h2>今日暂无已标记关注点出现新动态。</p><p><hr></p><p>💬 回复反馈：「多推科研」「少推政府」「跟踪厄尔尼诺」/「第2条展开」</p><p><hr></div>
   </div>
 </div>
 <div class="footer">
