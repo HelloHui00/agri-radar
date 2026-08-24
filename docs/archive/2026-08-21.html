@@ -3,67 +3,340 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🌾 农业遥感情报中心 · 今日</title>
+<title>农业遥感情报中心 · 今日</title>
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
-  background: #f0f2f5; color: #262626; line-height: 1.7; }
-.header { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 2rem 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-.header h1 { font-size: 1.8rem; max-width: 900px; margin: 0 auto; padding: 0 1.5rem; }
-.header .date { opacity: 0.9; max-width: 900px; margin: 0.3rem auto 0; padding: 0 1.5rem; font-size: 0.95rem; }
-.nav { background: white; border-bottom: 1px solid #e5e7eb; padding: 0.8rem 0; }
-.nav-inner { max-width: 900px; margin: 0 auto; padding: 0 1.5rem; display: flex; gap: 1.5rem; }
-.nav a { color: #059669; text-decoration: none; font-size: 0.9rem; }
-.nav a:hover { text-decoration: underline; }
-.main { max-width: 900px; margin: 2rem auto; padding: 0 1.5rem; }
-.card { background: white; border-radius: 8px; padding: 1.5rem 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 1.5rem; }
-h2 { color: #059669; font-size: 1.2rem; margin: 1.2rem 0 0.8rem; border-left: 4px solid #10b981; padding-left: 0.6rem; }
-hr { border: none; border-top: 1px dashed #d1d5db; margin: 1.5rem 0; }
-.num { color: #059669; font-weight: 600; margin-right: 0.3rem; }
-.bullet { color: #9ca3af; margin-right: 0.3rem; }
-a { color: #2563eb; }
-.footer { text-align: center; color: #9ca3af; font-size: 0.85rem; padding: 2rem; }
-.badge { display: inline-block; background: #d1fae5; color: #065f46; padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.8rem; margin-left: 0.5rem; }
-@media (max-width: 640px) {
-  .header h1 { font-size: 1.4rem; }
-  .card { padding: 1rem 1.2rem; }
+/* ============ Design tokens ============ */
+:root {
+  --bg:               #fafbf9;
+  --bg-elev:          #ffffff;
+  --bg-tint:          #f0fdf4;
+  --bg-tint-2:        #ecfdf5;
+  --border:           #e2e8f0;
+  --border-strong:    #cbd5e1;
+  --text:             #0f172a;
+  --text-2:           #334155;
+  --text-3:           #64748b;
+  --text-4:           #94a3b8;
+  --accent:           #059669;
+  --accent-strong:    #047857;
+  --accent-soft:      #d1fae5;
+  --accent-faint:     #ecfdf5;
+  --link:             #059669;
+  --link-hover:       #047857;
+  --shadow-color:     5 150 105;
+  --radius-card:      10px;
+  --radius-chip:      999px;
+  --radius-block:     6px;
+  --font-display:     "Söhne Breit", "Cabinet Grotesk", "Inter Display",
+                      -apple-system, BlinkMacSystemFont, "PingFang SC",
+                      "Microsoft YaHei", sans-serif;
+  --font-mono:        ui-monospace, "SF Mono", "JetBrains Mono",
+                      Menlo, Consolas, monospace;
 }
-/* Archive page specific */
-.archive-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; margin-top: 1rem; }
-.archive-day { background: white; border: 1px solid #e5e7eb; border-radius: 6px; padding: 1rem; transition: all 0.2s; }
-.archive-day:hover { border-color: #10b981; box-shadow: 0 2px 8px rgba(16,185,129,0.15); transform: translateY(-1px); }
-.archive-date { font-weight: 600; color: #059669; margin-bottom: 0.3rem; }
-.archive-meta { font-size: 0.85rem; color: #6b7280; }
-.stats-bar { display: flex; gap: 2rem; padding: 1rem; background: #ecfdf5; border-radius: 6px; margin: 1.2rem 0; }
-.stat-item { text-align: center; }
-.stat-value { font-size: 1.6rem; font-weight: bold; color: #065f46; }
-.stat-label { font-size: 0.85rem; color: #6b7280; margin-top: 0.2rem; }
-.month-header { color: #374151; font-size: 1.05rem; font-weight: 600; margin-top: 1.8rem; margin-bottom: 0.8rem;
-  padding-bottom: 0.4rem; border-bottom: 2px solid #d1fae5; }
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:               #0b0f0c;
+    --bg-elev:          #101613;
+    --bg-tint:          #0e241a;
+    --bg-tint-2:        #12291e;
+    --border:           #1f2a24;
+    --border-strong:    #2d3a33;
+    --text:             #e6f0ea;
+    --text-2:           #b7c9c0;
+    --text-3:           #7d8f87;
+    --text-4:           #4e5f57;
+    --accent:           #34d399;
+    --accent-strong:    #6ee7b7;
+    --accent-soft:      #064e3b;
+    --accent-faint:     #022c22;
+    --link:             #34d399;
+    --link-hover:       #6ee7b7;
+    --shadow-color:     0 0 0;
+  }
+}
+
+/* ============ Reset ============ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  font-family: var(--font-display);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "tnum" 1, "cv11" 1;
+  min-height: 100dvh;
+}
+::selection { background: var(--accent-soft); color: var(--accent-strong); }
+
+/* ============ Header (Hero: eyebrow + title + date, max 3) ============ */
+.site-head {
+  background: var(--bg-elev);
+  border-bottom: 1px solid var(--border);
+  padding: 1.4rem 0 1.15rem;
+}
+.site-head-inner {
+  max-width: 880px; margin: 0 auto; padding: 0 1.5rem;
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 1rem; flex-wrap: wrap;
+}
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.35rem;
+}
+.site-head h1 {
+  font-size: 1.45rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  line-height: 1.25;
+}
+.site-head .date {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-3);
+  letter-spacing: 0.01em;
+  padding-top: 0.4rem;
+}
+
+/* ============ Nav (single line, height cap 48px) ============ */
+.nav {
+  background: var(--bg-elev);
+  border-bottom: 1px solid var(--border);
+  padding: 0.55rem 0;
+}
+.nav-inner {
+  max-width: 880px; margin: 0 auto; padding: 0 1.5rem;
+  display: flex; gap: 1.4rem; align-items: center;
+  overflow-x: auto; scrollbar-width: none;
+}
+.nav-inner::-webkit-scrollbar { display: none; }
+.nav a {
+  color: var(--text-3);
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 500;
+  white-space: nowrap;
+  border-bottom: 1px solid transparent;
+  padding-bottom: 0.15rem;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+.nav a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+.nav a.primary { color: var(--accent); font-weight: 600; }
+
+/* ============ Main ============ */
+.main { max-width: 880px; margin: 2rem auto 3rem; padding: 0 1.5rem; }
+
+/* Stats bar (subtle, tinted shadow) */
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  margin-bottom: 1.8rem;
+}
+.stat-item {
+  background: var(--bg-elev);
+  padding: 1rem 1.1rem 0.9rem;
+  text-align: left;
+}
+.stat-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-4);
+  margin-bottom: 0.35rem;
+}
+.stat-value {
+  font-size: 1.6rem;
+  font-weight: 630;
+  color: var(--accent);
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============ Content card ============ */
+.card {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  padding: 2rem 2.2rem;
+  box-shadow: 0 1px 2px rgba(var(--shadow-color) / 0.04),
+              0 2px 8px rgba(var(--shadow-color) / 0.05);
+}
+@media (max-width: 640px) { .card { padding: 1.3rem 1.1rem; border-radius: 8px; } }
+
+/* Section headers 【科研】 etc. - "chip" treatment, tinted accent */
+h2 {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 650;
+  letter-spacing: -0.005em;
+  color: var(--accent-strong);
+  background: var(--accent-faint);
+  border: 1px solid var(--accent-soft);
+  padding: 0.3rem 0.85rem 0.32rem;
+  border-radius: var(--radius-chip);
+  margin: 1.6rem 0 0.9rem;
+}
+h2::before {
+  content: "";
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+h2:first-of-type { margin-top: 0.4rem; }
+
+/* List items */
+.num, .bullet { color: var(--accent); font-weight: 600; margin-right: 0.4rem; }
+.num { font-variant-numeric: tabular-nums; }
+
+/* Body text */
+.card p { color: var(--text-2); margin-bottom: 0.85rem; max-width: 65ch; }
+.card strong { color: var(--text); font-weight: 620; }
+
+/* Links */
+.card a {
+  color: var(--link);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+.card a:hover { color: var(--link-hover); border-bottom-color: var(--accent-soft); }
+
+/* Divider */
+hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 1.8rem 0;
+}
+
+/* Badge (use sparingly) */
+.badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: var(--accent-faint);
+  color: var(--accent-strong);
+  border: 1px solid var(--accent-soft);
+  padding: 0.15rem 0.55rem 0.17rem;
+  border-radius: var(--radius-chip);
+  white-space: nowrap;
+}
+
+/* ============ Footer ============ */
+.footer {
+  text-align: center;
+  color: var(--text-4);
+  font-size: 0.78rem;
+  padding: 2.5rem 1.5rem 3rem;
+  border-top: 1px solid var(--border);
+  margin-top: 3rem;
+}
+.footer p + p { margin-top: 0.3rem; }
+.footer a { color: var(--text-3); text-decoration: none; border-bottom: 1px solid var(--border-strong); }
+.footer a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+.footer .byline { font-weight: 500; color: var(--text-3); }
+.footer .sources-line { color: var(--text-4); letter-spacing: 0.002em; line-height: 1.55; }
+
+/* ============ Archive specific ============ */
+.archive-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.9rem;
+  margin-top: 0.9rem;
+}
+.archive-day {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-block);
+  padding: 0.95rem 1rem 0.85rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  cursor: pointer;
+}
+.archive-day:hover {
+  border-color: var(--accent);
+  box-shadow: 0 2px 12px rgba(var(--shadow-color) / 0.1);
+}
+.archive-date {
+  font-weight: 630;
+  color: var(--accent-strong);
+  font-size: 0.92rem;
+  letter-spacing: -0.005em;
+  margin-bottom: 0.25rem;
+}
+.archive-meta { font-size: 0.78rem; color: var(--text-3); font-variant-numeric: tabular-nums; }
+
+.month-header {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-top: 2rem;
+  margin-bottom: 0.6rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: baseline; justify-content: space-between; gap: 0.5rem;
+}
+.month-header .badge { transform: translateY(-1px); }
+
+/* ============ Reduced motion ============ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}
 </style>
 </head>
 <body>
-<div class="header">
-  <h1>🌾 农业遥感情报中心</h1>
-  <div class="date">2026-08-21 · 每日自动更新</div>
-</div>
+
+<header class="site-head">
+  <div class="site-head-inner">
+    <div>
+      <div class="eyebrow">Agri-Remote-Sensing Intelligence</div>
+      <h1>农业遥感情报中心</h1>
+    </div>
+    <div class="date">2026-08-21</div>
+  </div>
+</header>
+
 
 <div class="nav">
   <div class="nav-inner">
-    <a href="index.html">📄 今日简报</a>
-    <a href="archive/index.html">📚 历史归档</a>
-    <a href="https://github.com/hellohui00/agri-radar">⭐ GitHub</a>
+    <a href="index.html" class="primary">今日简报</a>
+    <a href="archive/index.html">历史归档</a>
+    <a href="https://github.com/hellohui00/agri-radar">GitHub</a>
   </div>
 </div>
 
-<div class="main">
-  <div class="card" id="today">
-<div class='content'>🌾 农业遥感日报 · 2026-08-21</p><p>&gt; ⚠️ 今晨先报告一起脚本故障：cron 调的 `agri_radar_collect.cmd` 因行尾是 LF（且 cron 用 Python 解析 .cmd）直接报 `SyntaxError`。已把 `D:\agri-radar\scripts\run_collect.cmd` 改成 CRLF+ASCII 注释并手动重跑采集/入库，今日新入库 19 条候选，本次简报基于昨日（21:43 那批）+今日新增的合并候选。</p><p><h2>【研究前沿】</h2><br><span class="num">1.</span> <strong>HLS-GPT：把 GPT 用到 Landsat/Sentinel-2 harmonized 数据的任意日期全谱段重建</strong>。 continental 尺度、跨日期重建，对农情遥感的时间序列缺测填补和&quot;未来某天生成长势图&quot;这类需求直接可用。 <a href="https://doi.org/10.1016/j.isprsjprs.2026.08.006" target="_blank">ISPRS Journal</a><br><span class="num">2.</span> <strong>Landsat NDVI 时空无缝重建：多填补 + 递归特征消除 BiLSTM</strong>。 解决云遮挡下 NDVI 时序断点问题，适合旱涝/长势连续监测。 <a href="https://doi.org/10.1016/j.isprsjprs.2026.05.043" target="_blank">ISPRS Journal</a><br><span class="num">3.</span> <strong>水稻冠层叶绿素卫星反演的方法学突破（论文标题即 &quot;Breaking barriers&quot;）</strong>。 直接对口作物长势反演，对水稻孕穗-灌浆期氮营养诊断有参考价值。 <a href="https://doi.org/10.1016/j.rse.2026.115581" target="_blank">RSE</a><br><span class="num">4.</span> <strong>SIF 估算植被光合碳同化时引入非光化学淬灭（NPQ）</strong>。 SIF 早期作物胁迫监测的机理改进。 <a href="https://doi.org/10.1016/j.rse.2026.115514" target="_blank">RSE</a><br><span class="num">5.</span> <strong>青藏无资料区径流遥感反演：水力几何约束下组合 ICESat-2 + Sentinel-1/2</strong>。 灌区/干旱区水量平衡和农业可用水量评估可借鉴。 <a href="https://doi.org/10.1016/j.rse.2026.115568" target="_blank">RSE</a></p><p><h2>【卫星与产业】</h2><br><span class="num">6.</span> <strong>ESA：多瑙河匈牙利段水位跌至历史最低（Sentinel-2 影像）</strong>。 中欧严重干旱背景下的水文遥感案例，组会讲旱情监测的鲜活素材。 <a href="https://www.esa.int/ESA_Multimedia/Images/2026/08/Danube_s_waters_fall_to_record_lows" target="_blank">ESA</a><br><span class="num">7.</span> <strong>ESA：2018 年以来欧洲森林生物量损失加速</strong>。 干旱+病虫害驱动的扰动加剧——跟农业灾害遥感同类的机理（biotic/abiotic 胁迫分类问题也可迁移到作物）。 <a href="https://www.esa.int/Applications/Observing_the_Earth/FutureEO" target="_blank">ESA / FutureEO</a><br><span class="num">8.</span> <strong>ESA：Meteosat 第三代 MTG-I2 发射前媒体通气会</strong>。 静止气象星更新对农情旱情大尺度监测和极端天气预警是基础设施级新闻。 <a href="https://www.esa.int/ESA_Multimedia/Videos/2026/08/Replay_MTG-I2_pre-launch_media_briefing" target="_blank">ESA</a></p><p><h2>【政策与项目】</h2><br><span class="num">9.</span> <strong>Mongolia 借 COP17 推动戈壁沙尘中韩蒙三国跨境应对</strong>。 干旱/沙尘遥感监测的国际合作机会，也可作为你做跨境沙尘源区监测选题的政策背景。 <a href="https://news.google.com/rss/articles/CBMia0FVX3lxTFBqQnB3Q0RreU1mMmx6YTdPWUlna0xZMldy" target="_blank">Korea Post</a><br><span class="num">10.</span> <strong>USDA 预计美豆单产创纪录、播种面积增加</strong>。 全球大豆供给预期宽松，影响国内大豆市场与卫星估产参考信号。 <a href="https://news.google.com/rss/articles/CBMiogFBVV95cUxPckUya1M0dmdXbE5pMEFUeXlYZ09zM2tD" target="_blank">Grain Journal</a><br><span class="num">11.</span> <strong>纳米比亚内阁叫停美方 AI 作物监测招标（主权/数据安全理由）</strong>。 全球南方对&quot;主权遥感/AI 农情服务&quot;敏感度的信号，对国产替代和&quot;吉林一号出海&quot;叙事有参考意义。 <a href="https://news.google.com/rss/articles/CBMifEFVX3lxTE1TT2ptM2J0WkE0aWxDVXY4NDlrY01LUGYx" target="_blank">The Namibian</a><br><span class="num">12.</span> <strong>FEWS NET 8 月全球粮食援助高峰需求展望</strong>。 全球热点区（刚果、叙利亚、巴基斯坦、尼泊尔…）主因仍是冲突而非气象，但报告内 IPC Phase 3+ 区分布图可作为灾情遥感目标区参考。 <a href="https://fews.net/global/peak-food-assistance-needs-outlook-brief/august-2026" target="_blank">FEWS NET</a></p><p><h2>【跟踪】</h2>已标记关注点今日动态：<br><span class="bullet">•</span> <strong>吉林一号 / 长光卫星 / Planet / Maxar / PhiSat-2 / 高分一号</strong>：今日候选中均未出现新条目（相关的 `智慧农业/产业公司` 谷歌新闻源本次 0 条返回，如果持续需要排查代理或 query 设计）。<br><span class="bullet">•</span> <strong>极端天气+作物</strong>：多瑙河历史低水位（Sentinel-2 记录）已选入（第 6 条）。<br><span class="bullet">•</span> <strong>农业灾害遥感</strong>（topic multiplier=1.5）：本次 13 条候选中有 6 条落在研究/灾情一线。</p><p>💬 回复反馈：「多推xx」「少推xx」「跟踪xx」/「第N条展开」<br></div>
-  </div>
-</div>
-<div class="footer">
-  <p>由 <a href="https://github.com/hellohui00/agri-radar">agri-radar</a> 自动生成 · 基于 LLM 智能筛选</p>
-  <p>数据源：RSE/ISPRS/TGRS/JSTARS · 中科院空天/武大遥感/北师大遥感/马里兰大学 · 吉林一号/Planet/Maxar/Vantor · 农业农村部/USDA/JMA</p>
-</div>
+
+<main class="main">
+
+  <article class="card" id="today">
+<div class='content'><p>🌾 农业遥感日报 · 2026-08-21</p><p>&gt; ⚠️ 今晨先报告一起脚本故障：cron 调的 `agri_radar_collect.cmd` 因行尾是 LF（且 cron 用 Python 解析 .cmd）直接报 `SyntaxError`。已把 `D:\agri-radar\scripts\run_collect.cmd` 改成 CRLF+ASCII 注释并手动重跑采集/入库，今日新入库 19 条候选，本次简报基于昨日（21:43 那批）+今日新增的合并候选。</p><h2>【研究前沿】</h2><p><span class="num">1.</span> <strong>HLS-GPT：把 GPT 用到 Landsat/Sentinel-2 harmonized 数据的任意日期全谱段重建</strong>。 continental 尺度、跨日期重建，对农情遥感的时间序列缺测填补和&quot;未来某天生成长势图&quot;这类需求直接可用。 <a href="https://doi.org/10.1016/j.isprsjprs.2026.08.006" target="_blank" rel="noopener">ISPRS Journal</a><br><span class="num">2.</span> <strong>Landsat NDVI 时空无缝重建：多填补 + 递归特征消除 BiLSTM</strong>。 解决云遮挡下 NDVI 时序断点问题，适合旱涝/长势连续监测。 <a href="https://doi.org/10.1016/j.isprsjprs.2026.05.043" target="_blank" rel="noopener">ISPRS Journal</a><br><span class="num">3.</span> <strong>水稻冠层叶绿素卫星反演的方法学突破（论文标题即 &quot;Breaking barriers&quot;）</strong>。 直接对口作物长势反演，对水稻孕穗-灌浆期氮营养诊断有参考价值。 <a href="https://doi.org/10.1016/j.rse.2026.115581" target="_blank" rel="noopener">RSE</a><br><span class="num">4.</span> <strong>SIF 估算植被光合碳同化时引入非光化学淬灭（NPQ）</strong>。 SIF 早期作物胁迫监测的机理改进。 <a href="https://doi.org/10.1016/j.rse.2026.115514" target="_blank" rel="noopener">RSE</a><br><span class="num">5.</span> <strong>青藏无资料区径流遥感反演：水力几何约束下组合 ICESat-2 + Sentinel-1/2</strong>。 灌区/干旱区水量平衡和农业可用水量评估可借鉴。 <a href="https://doi.org/10.1016/j.rse.2026.115568" target="_blank" rel="noopener">RSE</a></p><h2>【卫星与产业】</h2><p><span class="num">6.</span> <strong>ESA：多瑙河匈牙利段水位跌至历史最低（Sentinel-2 影像）</strong>。 中欧严重干旱背景下的水文遥感案例，组会讲旱情监测的鲜活素材。 <a href="https://www.esa.int/ESA_Multimedia/Images/2026/08/Danube_s_waters_fall_to_record_lows" target="_blank" rel="noopener">ESA</a><br><span class="num">7.</span> <strong>ESA：2018 年以来欧洲森林生物量损失加速</strong>。 干旱+病虫害驱动的扰动加剧——跟农业灾害遥感同类的机理（biotic/abiotic 胁迫分类问题也可迁移到作物）。 <a href="https://www.esa.int/Applications/Observing_the_Earth/FutureEO" target="_blank" rel="noopener">ESA / FutureEO</a><br><span class="num">8.</span> <strong>ESA：Meteosat 第三代 MTG-I2 发射前媒体通气会</strong>。 静止气象星更新对农情旱情大尺度监测和极端天气预警是基础设施级新闻。 <a href="https://www.esa.int/ESA_Multimedia/Videos/2026/08/Replay_MTG-I2_pre-launch_media_briefing" target="_blank" rel="noopener">ESA</a></p><h2>【政策与项目】</h2><p><span class="num">9.</span> <strong>Mongolia 借 COP17 推动戈壁沙尘中韩蒙三国跨境应对</strong>。 干旱/沙尘遥感监测的国际合作机会，也可作为你做跨境沙尘源区监测选题的政策背景。 <a href="https://news.google.com/rss/articles/CBMia0FVX3lxTFBqQnB3Q0RreU1mMmx6YTdPWUlna0xZMldy" target="_blank" rel="noopener">Korea Post</a><br><span class="num">10.</span> <strong>USDA 预计美豆单产创纪录、播种面积增加</strong>。 全球大豆供给预期宽松，影响国内大豆市场与卫星估产参考信号。 <a href="https://news.google.com/rss/articles/CBMiogFBVV95cUxPckUya1M0dmdXbE5pMEFUeXlYZ09zM2tD" target="_blank" rel="noopener">Grain Journal</a><br><span class="num">11.</span> <strong>纳米比亚内阁叫停美方 AI 作物监测招标（主权/数据安全理由）</strong>。 全球南方对&quot;主权遥感/AI 农情服务&quot;敏感度的信号，对国产替代和&quot;吉林一号出海&quot;叙事有参考意义。 <a href="https://news.google.com/rss/articles/CBMifEFVX3lxTE1TT2ptM2J0WkE0aWxDVXY4NDlrY01LUGYx" target="_blank" rel="noopener">The Namibian</a><br><span class="num">12.</span> <strong>FEWS NET 8 月全球粮食援助高峰需求展望</strong>。 全球热点区（刚果、叙利亚、巴基斯坦、尼泊尔…）主因仍是冲突而非气象，但报告内 IPC Phase 3+ 区分布图可作为灾情遥感目标区参考。 <a href="https://fews.net/global/peak-food-assistance-needs-outlook-brief/august-2026" target="_blank" rel="noopener">FEWS NET</a></p><p>【跟踪】已标记关注点今日动态：<br><span class="bullet">•</span> <strong>吉林一号 / 长光卫星 / Planet / Maxar / PhiSat-2 / 高分一号</strong>：今日候选中均未出现新条目（相关的 `智慧农业/产业公司` 谷歌新闻源本次 0 条返回，如果持续需要排查代理或 query 设计）。<br><span class="bullet">•</span> <strong>极端天气+作物</strong>：多瑙河历史低水位（Sentinel-2 记录）已选入（第 6 条）。<br><span class="bullet">•</span> <strong>农业灾害遥感</strong>（topic multiplier=1.5）：本次 13 条候选中有 6 条落在研究/灾情一线。</p><p>💬 回复反馈：「多推xx」「少推xx」「跟踪xx」/「第N条展开」</p></div>
+  </article>
+</main>
+
+<footer class="footer">
+  <p class="byline">由 <a href="https://github.com/hellohui00/agri-radar">agri-radar</a> 自动生成</p>
+  <p class="sources-line">RSE · ISPRS J P&R · IEEE TGRS · JAG · CEA · ESSD · Nature · Science · PNAS · ESA · NASA · 农业农村部 · 吉林一号 · Planet · Maxar</p>
+</footer>
+
 </body>
 </html>
