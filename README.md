@@ -12,7 +12,7 @@ Built for a **Surveying & Mapping Master's student** whose advisor focuses on ag
 
 | Capability | Detail |
 |---|---|
-| 📡 **Daily collection** | 4 major remote-sensing Q1 journals (RSE/ISPRS/TGRS/JSTARS), cutting-edge institutions (CAS-AIR, Wuhan University RS, BNU RS, UMD Geography), satellite industry (吉林一号/长光卫星/JL-1, Planet, Maxar/Vantor, ESA Sentinel), government agri-departments (CN Ministry of Agriculture, USDA, JMA, Embrapa etc.), agri-business (COFCO, Syngenta, ABCD traders, Beidahuang) |
+| 📡 **Daily collection** | Top remote-sensing journals (RSE, ISPRS J P&R, IEEE TGRS, JAG/IJAEOG), agri/geo-data journals (CEA, ESSD), top general journals (Nature, Science, PNAS), cutting-edge institutions (CAS-AIR, Wuhan University RS, BNU RS, UMD Geography), satellite industry (吉林一号/长光卫星/JL-1, Planet, Maxar/Vantor, ESA Sentinel), government agri-departments (CN Ministry of Agriculture, USDA, JMA, Embrapa etc.), agri-business (COFCO, Syngenta, ABCD traders, Beidahuang) |
 | 🧠 **LLM triage** | Uses an OpenAI-compatible API (Kimi/DeepSeek/GLM/Claude/GPT etc., pluggable) to score + filter + summarize in Chinese |
 | 🎯 **Topic weighting** | Learns from your feedback (⭐/👎/keywords) via a transparent weight table you can inspect |
 | 👁️ **Topic tracking** | Named watchlist (吉林一号, PhiSat-2, etc.) — alerts only on material changes |

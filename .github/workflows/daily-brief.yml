@@ -30,6 +30,10 @@ jobs:
         run: |
           mkdir -p data logs output docs/archive
 
+      - name: Get today's date
+        id: today
+        run: echo "date=$(date +%Y-%m-%d)" >> $GITHUB_OUTPUT
+
       - name: Run collector
         env:
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}

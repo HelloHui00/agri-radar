@@ -1,15 +1,51 @@
 [
   {
     "type": "rss_category",
-    "name": "期刊-RSE/ISPRS/TGRS/JSTARS 最新论文",
-    "tags": ["journal"],
-    "base_weight": 5,
+    "name": "期刊-遥感四大刊 最新论文",
+    "tags": ["journal", "rs_top"],
+    "base_weight": 6,
     "enabled": true,
     "proxy": true,
     "journals": [
       {"issn": "0034-4257", "name": "Remote Sensing of Environment"},
       {"issn": "0924-2716", "name": "ISPRS J Photogrammetry & RS"},
       {"issn": "0196-2892", "name": "IEEE TGRS"},
+      {"issn": "1569-8432", "name": "Int J Applied Earth Obs & Geoinfo"}
+    ]
+  },
+  {
+    "type": "rss_category",
+    "name": "期刊-农业/地学数据 最新论文",
+    "tags": ["journal", "agri_data"],
+    "base_weight": 6,
+    "enabled": true,
+    "proxy": true,
+    "journals": [
+      {"issn": "0168-1699", "name": "Computers and Electronics in Agriculture"},
+      {"issn": "1866-3516", "name": "Earth System Science Data"}
+    ]
+  },
+  {
+    "type": "rss_category",
+    "name": "期刊-综合顶刊 最新论文",
+    "tags": ["journal", "top_general"],
+    "base_weight": 7,
+    "enabled": true,
+    "proxy": true,
+    "journals": [
+      {"issn": "1476-4687", "name": "Nature"},
+      {"issn": "1095-9203", "name": "Science"},
+      {"issn": "1091-6490", "name": "PNAS"}
+    ]
+  },
+  {
+    "type": "rss_category",
+    "name": "期刊-其他遥感 最新论文",
+    "tags": ["journal"],
+    "base_weight": 4,
+    "enabled": true,
+    "proxy": true,
+    "journals": [
       {"issn": "1939-1404", "name": "IEEE JSTARS"}
     ]
   },
