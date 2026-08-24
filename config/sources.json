@@ -60,10 +60,10 @@
     "gl": "CN",
     "ceid": "CN:zh-Hans",
     "queries": [
-      "中科院空天信息院 遥感",
-      "武汉大学遥感信息工程 成果",
-      "北京师范大学 遥感 团队",
-      "中国农科院 遥感"
+      "空天院 遥感",
+      "武大 遥感",
+      "北师大 遥感",
+      "农科院 遥感"
     ]
   },
   {
@@ -77,9 +77,9 @@
     "gl": "US",
     "ceid": "US:en",
     "queries": [
-      "University of Maryland remote sensing",
-      "NASA JPL Earth science research",
-      "ESA ESRIN research news"
+      "Maryland remote sensing",
+      "NASA JPL",
+      "ESA ESRIN"
     ]
   },
   {
@@ -92,7 +92,7 @@
     "lang": "zh-CN",
     "gl": "CN",
     "ceid": "CN:zh-Hans",
-    "queries": ["吉林一号 卫星", "长光卫星 发射"]
+    "queries": ["吉林一号", "长光卫星"]
   },
   {
     "type": "google_news",
@@ -104,7 +104,7 @@
     "lang": "en-US",
     "gl": "US",
     "ceid": "US:en",
-    "queries": ["Planet Labs agriculture", "Planet Labs SkySat"]
+    "queries": ["Planet Labs", "Planet SkySat"]
   },
   {
     "type": "google_news",
@@ -116,7 +116,7 @@
     "lang": "en-US",
     "gl": "US",
     "ceid": "US:en",
-    "queries": ["Vantor satellite", "Maxar agriculture remote sensing"]
+    "queries": ["Vantor", "Maxar"]
   },
   {
     "type": "google_news",
@@ -128,7 +128,7 @@
     "lang": "zh-CN",
     "gl": "CN",
     "ceid": "CN:zh-Hans",
-    "queries": ["Sentinel-3 农业", "欧空局 Sentinel 遥感"]
+    "queries": ["Sentinel-3", "Sentinel"]
   },
   {
     "type": "google_news",
@@ -141,10 +141,10 @@
     "gl": "CN",
     "ceid": "CN:zh-Hans",
     "queries": [
-      "农业农村部 遥感 监测",
-      "省农业厅 旱情 遥感",
-      "农科院 遥感 项目",
-      "农业灾情 预警 遥感"
+      "农业农村部",
+      "旱情 遥感",
+      "农科院",
+      "农业 灾情 预警"
     ]
   },
   {
@@ -158,10 +158,10 @@
     "gl": "US",
     "ceid": "US:en",
     "queries": [
-      "crop forecast government",
-      "agricultural warning ministry",
-      "drought monitoring government country",
-      "crop monitoring system Japan Brazil EU"
+      "crop forecast",
+      "agricultural warning",
+      "drought monitoring",
+      "crop monitoring"
     ]
   },
   {
@@ -175,9 +175,9 @@
     "gl": "US",
     "ceid": "US:en",
     "queries": [
-      "Japan MAFF agriculture",
-      "Thailand Rice Department",
-      "Vietnam MARD crop"
+      "Japan agriculture",
+      "Thailand rice",
+      "Vietnam crop"
     ]
   },
   {
@@ -191,9 +191,9 @@
     "gl": "US",
     "ceid": "US:en",
     "queries": [
-      "Brazil Embrapa agriculture",
-      "Argentina MAGyP crop",
-      "Mexico agriculture ministry"
+      "Embrapa",
+      "Argentina crop",
+      "Mexico agriculture"
     ]
   },
   {
@@ -215,10 +215,10 @@
     "gl": "CN",
     "ceid": "CN:zh-Hans",
     "queries": [
-      "中粮集团 农业",
-      "先正达 数字农业",
-      "北大荒 农业遥感",
-      "ABCD 四大粮商 粮食"
+      "中粮集团",
+      "先正达",
+      "北大荒",
+      "四大粮商"
     ]
   },
   {
@@ -232,10 +232,10 @@
     "gl": "US",
     "ceid": "US:en",
     "queries": [
-      "Syngenta digital farming",
-      "Cargill agriculture technology",
-      "ADM crop monitoring",
-      "Bunge grain satellite"
+      "Syngenta",
+      "Cargill",
+      "ADM",
+      "Bunge"
     ]
   },
   {
