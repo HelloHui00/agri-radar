@@ -43,8 +43,12 @@ jobs:
         env:
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
         run: |
-          python scripts/collect.py > data/run_$(date +%Y%m%d_%H%M).jsonl
-          python scripts/ingest.py data/run_$(date +%Y%m%d_%H%M).jsonl
+          set -e
+          RUN_FILE="data/run_$(date +%Y%m%d_%H%M).jsonl"
+          echo "[info] writing to $RUN_FILE"
+          python scripts/collect.py > "$RUN_FILE"
+          ls -lh "$RUN_FILE"
+          python scripts/ingest.py "$RUN_FILE"
 
       - name: Generate brief
         env:
