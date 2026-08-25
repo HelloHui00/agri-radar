@@ -80,3 +80,27 @@ def bump_topic(conn, topic, delta):
         INSERT INTO topic_prefs(topic, multiplier, updated_at) VALUES(?, ?, ?)
         ON CONFLICT(topic) DO UPDATE SET multiplier = MAX(0.1, MIN(5.0, multiplier + ?)), updated_at = ?
     """, (topic, 1.0 + delta, now(), delta, now()))
+
+
+def snapshot_prefs(conn):
+    """Return current non-default prefs for display on Pages.
+
+    {
+      "topics":   [{"name": ..., "multiplier": float}] (multiplier != 1.0, sorted),
+      "sources":  [{"name": ..., "multiplier": float}],
+      "watch":    [{"pattern": ..., "note": str}]
+    }
+    """
+    topics = [{"name": r["topic"], "multiplier": r["multiplier"]}
+              for r in conn.execute(
+                  "SELECT topic, multiplier FROM topic_prefs "
+                  "WHERE multiplier != 1.0 ORDER BY ABS(multiplier-1) DESC").fetchall()]
+    sources = [{"name": r["source_name"], "multiplier": r["multiplier"]}
+               for r in conn.execute(
+                   "SELECT source_name, multiplier FROM source_prefs "
+                   "WHERE multiplier != 1.0 ORDER BY ABS(multiplier-1) DESC").fetchall()]
+    watch = [{"pattern": r["pattern"], "note": r["note"] or ""}
+             for r in conn.execute(
+                 "SELECT pattern, note FROM watchlist WHERE active=1 "
+                 "ORDER BY created_at DESC").fetchall()]
+    return {"topics": topics, "sources": sources, "watch": watch}

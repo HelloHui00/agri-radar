@@ -15,8 +15,32 @@ BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def load_server_cfg():
     cfg_path = os.path.join(BASE, "config", "server.json")
-    with open(cfg_path, encoding="utf-8") as f:
-        return json.load(f)
+    if not os.path.exists(cfg_path):
+        return {}
+    try:
+        with open(cfg_path, encoding="utf-8") as f:
+            return json.load(f)
+    except json.JSONDecodeError:
+        return {}
+
+
+def resolve_feishu_credentials():
+    """Return (webhook_url, secret) with env taking precedence over server.json.
+
+    Priority:
+      1. env FEISHU_WEBHOOK_URL / FEISHU_SECRET   (GitHub Actions secrets)
+      2. config/server.json → feishu.webhook_url / feishu.secret  (local dev)
+
+    Either may be empty.
+    """
+    env_url = os.environ.get("FEISHU_WEBHOOK_URL", "").strip()
+    env_secret = os.environ.get("FEISHU_SECRET", "").strip()
+    if env_url:
+        return env_url, env_secret
+    cfg = load_server_cfg()
+    f = (cfg.get("feishu") or {})
+    return (f.get("webhook_url", "") or "").strip(), \
+           (f.get("secret", "") or "").strip()
 
 
 def sign(timestamp, secret):
@@ -123,12 +147,13 @@ def main():
     if m:
         date_str = m.group(1)
 
-    cfg = load_server_cfg()
-    feishu = cfg["feishu"]
+    webhook_url, secret = resolve_feishu_credentials()
     chunks = convert_md_to_feishu(md_text)
 
     if dry_run:
         print(f"准备推送 {len(chunks)} 张卡片 (dry-run, 不实际发送)")
+        print(f"credentials: webhook_url={'set' if webhook_url else 'MISSING'}, "
+              f"secret={'set' if secret else 'MISSING'}")
         for i, c in enumerate(chunks):
             print(f"\n--- 卡片 {i + 1} ({len(c.encode('utf-8'))} bytes) ---")
             print(c[:500])
@@ -136,14 +161,15 @@ def main():
                 print(f"... 剩余 {len(c)-500} 字符")
         return
 
-    if not feishu.get("webhook_url"):
-        print("ERROR: config/server.json 里 feishu.webhook_url 为空")
-        print("      请先在飞书群里添加自定义机器人,拿到 webhook URL 填入")
+    if not webhook_url:
+        print("ERROR: 未配置飞书 webhook。")
+        print("      优先读取 env FEISHU_WEBHOOK_URL / FEISHU_SECRET,")
+        print("      其次回落 config/server.json 中 feishu.webhook_url/secret。")
         sys.exit(1)
 
     for i, chunk in enumerate(chunks):
         payload = build_card(chunk, date_str)
-        result = push(feishu["webhook_url"], feishu.get("secret", ""), payload)
+        result = push(webhook_url, secret, payload)
         print(f"卡片 {i + 1} 推送结果: {result}")
         if i < len(chunks) - 1:
             time.sleep(1)  # 飞书频率限制
