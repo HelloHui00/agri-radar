@@ -27,54 +27,142 @@ def render_prompt(template, mapping):
     return template
 
 
-def load_candidates(limit=25):
+def load_candidates(total_limit=80, per_section_quota=None):
+    """Load candidates grouped by section so every section has a floor.
+
+    Returns (candidates, errors, weights).
+    Every section gets at least `per_section_quota[section]` candidates if
+    the db has them; remaining pool is filled by score across all sections.
+    """
+    if per_section_quota is None:
+        per_section_quota = {
+            "journal":              20,   # 科研 - 期刊
+            "institution":          12,   # 科研 - 机构
+            "industry_satellite":   16,   # 产业界 - 卫星
+            "gov":                  16,   # 政府部门
+            "industry_agri_company": 16,  # 公司
+        }
     db.init_schema()
     conn = db.get_conn()
-    rows = conn.execute("""
-        SELECT id, title, url, source_name, source_tags, published, summary, score
-        FROM items WHERE shown=0
-        ORDER BY score DESC, published DESC LIMIT ?
-    """, (limit * 3,)).fetchall()  # 取 3 倍然后过滤
-    
-    # 行业敏感词黑名单：标题或 summary 有这些词的不该进 institution/journal
-    spam_keywords = [
-        "isro", "india space", "indian space", "satsure",  # 印度航天
-        "spacex", "elon musk rocket", "falcon 9",          # SpaceX 火箭
-        "space startup", "space industry value",            # 航天IT/创投
-        "nasa administrator",                               # NASA 行政新闻
+
+    # 每板块对应的 tag 集合（先按 tag 进第一个候选池）
+    section_tags = {
+        "journal":              ["journal"],
+        "institution":          ["institution"],
+        "industry_satellite":   ["industry_satellite"],
+        "gov":                  ["gov"],
+        "industry_agri_company":["industry_agri_company"],
+    }
+
+    # 行业敏感词黑名单（用作欺炸性过滤,但放宽到不只是印度/SpaceX）
+    spam_keywords_strict = [
+        "pm modi",        # 纯政治内容
+        "election result",
+        "stock price soars",
     ]
-    
-    # LLM 前硬过滤：按四板块定义做粗筛，清除噪音
+
+    # 水印关键词：命中这些词的 google_news 候选降一档优先级（不剔除，只降权）
+    low_signal_keywords = [
+        "isro", "india space", "indian space", "satsure",
+        "spacex", "elon musk", "falcon 9",
+        "space startup", "space industry value",
+        "nasa administrator",
+    ]
+
+    # 按板块独立拉候选
+    rows_by_section = {}
+    for section, tags in section_tags.items():
+        # journal 单独带 limit,其他按 quota
+        q = per_section_quota[section]
+        # sqlite 不支持数组参数 in,用 LIKE 粗匹配
+        like_clauses = " OR ".join([f"source_tags LIKE '%\"{t}\"%'" for t in tags])
+        rows = conn.execute(f"""
+            SELECT id, title, url, source_name, source_tags, published,
+                   summary, score
+            FROM items WHERE shown=0 AND ({like_clauses})
+            ORDER BY score DESC, published DESC
+            LIMIT ?
+        """, (q * 2,)).fetchall()  # 取 2 倍方便后面再过滤
+        rows_by_section[section] = rows
+
+    # 合并：先按板块各取 quota,再补到 total_limit
+    picked_ids = set()
     reps = []
-    for r in rows:
-        tags = json.loads(r["source_tags"] or "[]")
-        # 只保留四板块允许的类别
-        if not any(t in ["journal", "institution", "industry_satellite",
-                        "gov", "industry_agri_company"] for t in tags):
-            continue
-        
-        # 内容级过滤: 标题或 summary 含 spam 关键词的剔除
-        text = (r["title"] + " " + (r["summary"] or "")).lower()
-        if any(kw in text for kw in spam_keywords):
-            continue
-        
-        # Google News 来源的，标题含 India/ISRO/Indian 等限定词的疑似噪音
-        if "谷歌新闻" in (r["source_name"] or ""):
-            if any(kw in text for kw in ["isro", "india space-tech", "satsure",
-                                          "pm modi", "india into a global space"]):
+    for section, quota in per_section_quota.items():
+        cnt = 0
+        for r in rows_by_section[section]:
+            if r["id"] in picked_ids:
                 continue
-        
-        reps.append(r)
-        if len(reps) >= limit:
-            break
-    
-    cands = [{"id": r["id"], "title": r["title"], "src": r["source_name"],
-              "tags": r["source_tags"],
-              "score": r["score"],
-              "pub": r["published"][:16] if r["published"] else "",
-              "url": r["url"],
-              "summary": (r["summary"] or "")[:220]}
-             for r in reps]
+            text = (r["title"] + " " + (r["summary"] or "")).lower()
+            # 严格黑名单才剔除
+            if any(kw in text for kw in spam_keywords_strict):
+                continue
+            picked_ids.add(r["id"])
+            reps.append((section, r))
+            cnt += 1
+            if cnt >= quota:
+                break
+
+    # 剩余位置,按 score 全局排,但每个 section 不得超过其 quota 之上限
+    # (防止 fallback 又把 journal 拉到 30+)
+    section_max = {s: q + 4 for s, q in per_section_quota.items()}  # 允许 ±4 弹性
+    section_cnt = {}
+    for _, r in reps:
+        # count existing per-section
+        pass  # skip, use section from tuple
+
+    # recompute section counts from reps
+    section_cnt = {}
+    for sec, _ in reps:
+        section_cnt[sec] = section_cnt.get(sec, 0) + 1
+
+    if len(reps) < total_limit:
+        all_rows = conn.execute("""
+            SELECT id, title, url, source_name, source_tags, published,
+                   summary, score
+            FROM items WHERE shown=0
+            ORDER BY score DESC, published DESC
+            LIMIT ?
+        """, (total_limit * 3,)).fetchall()
+        for r in all_rows:
+            if len(reps) >= total_limit:
+                break
+            if r["id"] in picked_ids:
+                continue
+            tags = json.loads(r["source_tags"] or "[]")
+            section = next((s for s, ts in section_tags.items()
+                            if any(t in tags for t in ts)), None)
+            if not section:
+                continue
+            # 板块超过 quota+4 就不再塞了
+            if section_cnt.get(section, 0) >= section_max.get(section, per_section_quota[section] + 4):
+                continue
+            text = (r["title"] + " " + (r["summary"] or "")).lower()
+            if any(kw in text for kw in spam_keywords_strict):
+                continue
+            picked_ids.add(r["id"])
+            reps.append((section, r))
+            section_cnt[section] = section_cnt.get(section, 0) + 1
+
+    # 给低信号条目降权（仅用于给 LLM 参考,不剔除）
+    # 实现方式：在传给 LLM 的 dict 里加 'low_signal' 标记
+    cands = []
+    for section, r in reps:
+        text_l = (r["title"] + " " + (r["summary"] or "")).lower()
+        low_sig = any(kw in text_l for kw in low_signal_keywords)
+        cands.append({
+            "id": r["id"],
+            "title": r["title"],
+            "src": r["source_name"],
+            "section": section,
+            "tags": r["source_tags"],
+            "score": r["score"],
+            "pub": r["published"][:16] if r["published"] else "",
+            "url": r["url"],
+            "summary": (r["summary"] or "")[:220],
+            "low_signal": low_sig,
+        })
+
     er = conn.execute("SELECT v FROM meta WHERE k='last_run_errors'").fetchone()
     errors = json.loads(er["v"]) if er else []
     src_w = {r["source_name"]: r["multiplier"] for r in
@@ -87,7 +175,17 @@ def load_candidates(limit=25):
 
 def main():
     date = today_str()
-    cands, errors, weights = load_candidates(limit=25)
+    # 分板块加载候选，保证每个板块至少有内容可供 LLM 挑
+    cands, errors, weights = load_candidates(
+        total_limit=80,
+        per_section_quota={
+            "journal":              20,
+            "institution":          12,
+            "industry_satellite":   16,
+            "gov":                  16,
+            "industry_agri_company": 16,
+        },
+    )
     if not cands:
         print("今天没有新的候选条目。")
         return

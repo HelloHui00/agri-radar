@@ -2,7 +2,10 @@ name: Daily Brief & Pages Update
 
 on:
   schedule:
-    - cron: '30 23 * * *'
+    # 每天 00:00 北京时间 (UTC 16:00 前一天) 爬取全球信息
+    # 北京 8-25 00:00 跑 → 抓取的是 8-24 00:00 ~ 8-25 00:00 这 24h 的内容
+    # 产出的 brief 标日期为 8-24, Pages / 飞书在 8-25 早上查看
+    - cron: '0 16 * * *'
   workflow_dispatch:
 
 permissions:
@@ -30,8 +33,10 @@ jobs:
         run: |
           mkdir -p data logs output docs/archive
 
-      - name: Get today's date
+      - name: Get content date
         id: today
+        # 北京 00:00 = UTC 16:00 前一天, 此 step 跑时 UTC 仍是"内容采集日";
+        # `date +%F` 就是采集日, brief/Pages 标题均以采集日标记日期
         run: echo "date=$(date +%Y-%m-%d)" >> $GITHUB_OUTPUT
 
       - name: Run collector
