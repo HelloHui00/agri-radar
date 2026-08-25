@@ -298,6 +298,170 @@ hr {
 }
 .month-header .badge { transform: translateY(-1px); }
 
+/* ============ Feedback card ============ */
+.feedback-card {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  padding: 1.4rem 1.5rem 1.3rem;
+  margin-top: 1.8rem;
+  box-shadow: 0 1px 2px rgba(var(--shadow-color) / 0.04);
+}
+.fb-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.3rem;
+}
+.fb-title {
+  font-size: 1.05rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  margin-bottom: 0.4rem;
+}
+.fb-desc {
+  font-size: 0.85rem;
+  color: var(--text-3);
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+.fb-quick-row {
+  display: flex; flex-wrap: wrap; gap: 0.45rem;
+  margin-bottom: 0.9rem;
+}
+.fb-chip {
+  padding: 0.28rem 0.75rem;
+  border-radius: var(--radius-chip);
+  border: 1px solid var(--accent-soft);
+  background: var(--accent-faint);
+  color: var(--accent-strong);
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+  white-space: nowrap;
+}
+.fb-chip:hover { background: var(--accent-soft); border-color: var(--accent); }
+.fb-chip:active { transform: translateY(1px); }
+.fb-textarea {
+  width: 100%;
+  min-height: 96px;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-block);
+  padding: 0.65rem 0.85rem;
+  resize: vertical;
+  line-height: 1.6;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.fb-textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-faint);
+}
+.fb-actions {
+  display: flex; gap: 0.6rem; align-items: center;
+  margin-top: 0.85rem;
+  flex-wrap: wrap;
+}
+.fb-btn {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  padding: 0.5rem 1.05rem;
+  border-radius: var(--radius-block);
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+  text-decoration: none;
+}
+.fb-btn:hover { background: var(--accent-strong); border-color: var(--accent-strong); }
+.fb-btn:active { transform: translateY(1px); }
+.fb-btn.secondary {
+  background: transparent;
+  color: var(--accent);
+  border-color: var(--border-strong);
+}
+.fb-btn.secondary:hover {
+  background: var(--accent-faint);
+  border-color: var(--accent);
+  color: var(--accent-strong);
+}
+.fb-note {
+  font-size: 0.72rem;
+  color: var(--text-4);
+  margin-top: 0.7rem;
+  font-family: var(--font-mono);
+}
+.fb-status {
+  font-size: 0.8rem;
+  color: var(--accent-strong);
+  margin-left: 0.4rem;
+}
+
+/* ============ Current prefs snapshot ============ */
+.prefs-card {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  padding: 1rem 1.3rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.85rem;
+}
+.prefs-title {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-4);
+  font-family: var(--font-mono);
+  margin-bottom: 0.55rem;
+}
+.prefs-row {
+  display: flex; flex-wrap: wrap; gap: 0.4rem;
+  align-items: center;
+}
+.prefs-row + .prefs-row { margin-top: 0.4rem; }
+.prefs-tag {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: var(--radius-chip);
+  font-size: 0.74rem;
+  font-weight: 500;
+  border: 1px solid var(--border-strong);
+  color: var(--text-3);
+  background: var(--bg);
+  font-variant-numeric: tabular-nums;
+}
+.prefs-tag.like {
+  border-color: var(--accent-soft);
+  color: var(--accent-strong);
+  background: var(--accent-faint);
+}
+.prefs-tag.dislike {
+  border-color: #fecaca;
+  color: #b91c1c;
+  background: #fef2f2;
+}
+.prefs-tag.watch {
+  border-color: #fde68a;
+  color: #92400e;
+  background: #fffbeb;
+}
+@media (prefers-color-scheme: dark) {
+  .prefs-tag.dislike { border-color: #7f1d1d; color: #fca5a5; background: #450a0a; }
+  .prefs-tag.watch   { border-color: #78350f; color: #fbbf24; background: #451a03; }
+}
+
 /* ============ Reduced motion ============ */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
@@ -328,9 +492,109 @@ hr {
 
 <main class="main">
 
+
   <article class="card" id="today">
 <div class='content'><p>🌾 农业遥感日报 · 2026-08-20</p><h2>【研究前沿】</h2><p><span class="num">1.</span> <strong>作物叶绿素遥感计算精度突破</strong>。针对水稻行播结构导致的反射率饱和问题，Radiative Transfer + GORT 模型耦合的 RiceGORT 框架有效纠正偏差，R² 从 0.71 提升至 0.89。对作物的氮素/产量遥感反演有直接参考价值。 <a href="https://doi.org/..." target="_blank" rel="noopener">RSE</a><br><span class="num">2.</span> <strong>SIF 到 GPP 估算方法改进</strong>。将非光化学淬灭 NPQ 过程纳入日光诱导叶绿素荧光 SIF 估算光合碳同化，降低了传统 SIF-GPP 模型在高光强下的系统性高估误差。对干旱胁迫监测有间接意义。 <a href="https://doi.org/..." target="_blank" rel="noopener">RSE</a><br><span class="num">3.</span> <strong>全球火烧迹地新产品 (2017-2025)</strong>。基于 Landsat 8/9 的 30m 分辨率月度火烧迹地产品覆盖非洲全大陆，较 MODIS 产品空间细节提升显著，对农业区秸秆焚烧/灾害过火评估适用。 <a href="https://doi.org/..." target="_blank" rel="noopener">RSE</a><br><span class="num">4.</span> <strong>土壤水分反演的深度学习迁移框架</strong>。散射模型先验 + 深度迁移学习组合用于主动微波土壤水分反演，在跨传感器条件下 RMSE 降低 15%。对旱情遥感监测基础数据支撑。 <a href="https://doi.org/..." target="_blank" rel="noopener">TGRS</a><br><span class="num">5.</span> <strong>大豆蛋白质含量预测新方法</strong>。多时相植被指数结合冠层生理特征动态模型，实现籽粒蛋白质含量区域尺度预测，对粮食贸易品质监测有应用潜力。 <a href="https://doi.org/..." target="_blank" rel="noopener">JSTARS</a><br><span class="num">6.</span> <strong>CanadaFireSat：多模态高分辨率野火预测</strong>。融合 VIIRS/MODIS 火点 + Sentinel-1 SAR + 气象数据，加拿大野火识别 F1 分数 0.93，为农业区林草火灾遥感监测提供思路。 <a href="https://doi.org/..." target="_blank" rel="noopener">JSTARS</a></p><h2>【卫星与产业】</h2><p><span class="num">7.</span> <strong>ESA FLEX 光合作用卫星加注完成，9 月发射</strong>。FLuorescence EXplorer 专用于植被光合作用监测，与 Sentinel-3 协同观测，为作物胁迫遥感提供新的星载数据源。 <a href="https://www.esa.int/..." target="_blank" rel="noopener">ESA</a><br><span class="num">8.</span> <strong>Sentinel-3 野火数据传输提速 3 倍</strong>。ESA 与 Eumetsat 合作优化数据处理链路，European 应急机构可提前 3 小时获取火点信息，对中欧山火-农田交错带灾害响应有价值。 <a href="https://www.esa.int/..." target="_blank" rel="noopener">ESA</a><br><span class="num">9.</span> <strong>FEWS NET 发布 2026 年 8 月全球粮食援助展望</strong>。东非干旱区、中美洲走廊粮食不安全状况持续恶化，需持续人道主义干预区域达 27 国。 <a href="https://fews.net/..." target="_blank" rel="noopener">FEWS NET</a><br><span class="num">10.</span> <strong>印度农业遥感创业动态</strong>。SatSure 获得印度多家大型银行战略投资，推动面向小农户的卫星遥感信贷评估产品落地。产业侧对遥感农情监测需求旺盛的信号。 <a href="https://..." target="_blank" rel="noopener">OfficeChai</a></p><h2>【政策与产业事件】</h2><p><span class="num">11.</span> <strong>印度农业统计可信度遭官方报告质疑</strong>。新发布的报告指出印度粮食产量统计存在系统性偏差，反映出卫星/地面数据融合验证的重要性。 <a href="https://..." target="_blank" rel="noopener">Down To Earth</a><br><span class="num">12.</span> <strong>纳米比亚政府撕毁 AI 作物监测合同</strong>。因法律缺陷，取消与 6th Grain 价值数百万美元的 AI 农情监测项目，反映新兴市场对遥感 AI 产品落地合规性的重视。 <a href="https://..." target="_blank" rel="noopener">Namibia Economist</a><br><span class="num">13.</span> <strong>印度 PMFBY 农业保险赔付中卫星遥感技术争议</strong>。中央邦农民对基于卫星遥感的作物保险定损结果提出质询，赔付率下降引发对技术准确性的讨论。农业遥感定损的社会接受度问题首次规模化暴露。 <a href="https://..." target="_blank" rel="noopener">Down To Earth</a><br><span class="num">14.</span> <strong>美国 2026 大豆播种面积创历史新高，USDA 产量预估上调</strong>。基于卫星监测+地面调查的综合评估，美国大豆产量预估上调 5%。大宗粮油遥感动态监测的宏观参考。 <a href="https://..." target="_blank" rel="noopener">Grain Journal</a></p><h2>【跟踪】</h2><p><span class="bullet">•</span> 吉林一号、PhiSat-2、CropWatch、马里兰大学：今日暂无实质更新</p><p>💬 回复反馈：「多推xx」「少推xx」「跟踪xx」/「第N条展开」</p></div>
   </article>
+
+<div class="feedback-card" role="form" aria-label="反馈表">
+  <div class="fb-eyebrow">Feedback</div>
+  <div class="fb-title">告诉我们你想看什么、不想看什么</div>
+  <div class="fb-desc">
+    点击下面的快捷指令快速填充,也可以直接写。明早 5 点的 workflow 会读取你的反馈,并据此调整推送。
+  </div>
+  <div class="fb-quick-row"><button type="button" class="fb-chip" data-inject="多推 PhiSat-2 星上处理 农业">多推 PhiSat-2</button><button type="button" class="fb-chip" data-inject="多推 高光谱遥感进展">多推 高光谱</button><button type="button" class="fb-chip" data-inject="多推 干旱监测与墒情">多推 干旱监测</button><button type="button" class="fb-chip" data-inject="少推 渔业">少推 渔业</button><button type="button" class="fb-chip" data-inject="少推 政府政策解读">少推 政策法规解读</button><button type="button" class="fb-chip" data-inject="跟踪 CropWatch 新数据发布">跟踪 CropWatch</button><button type="button" class="fb-chip" data-inject="跟踪 吉林一号 农业">跟踪 吉林一号</button></div>
+  <textarea
+    id="fb-text"
+    class="fb-textarea"
+    placeholder="例如:多推 高光谱 / 少推 渔业 / 跟踪 Maxar 农业"
+    aria-label="反馈内容"
+    maxlength="2000"></textarea>
+  <div class="fb-actions">
+    <button type="button" id="fb-submit" class="fb-btn">提交到 GitHub</button>
+    <button type="button" id="fb-copy" class="fb-btn secondary">复制到剪贴板</button>
+    <span class="fb-status" id="fb-status" role="status" aria-live="polite"></span>
+  </div>
+  <div class="fb-note">
+    提交后会打开 GitHub 新建 Issue 页(带上你写的内容),需要你点一下"Submit"完成创建。
+    如果你没有 GitHub 账号,可以点"复制到剪贴板",把内容发到我们飞书群/邮箱。
+  </div>
+</div>
+
+<script>
+(function() {
+  var repo = "HelloHui00/agri-radar";
+  var dateStr = "2026-08-20";
+  var pageUrl = "https://HelloHui00.github.io/agri-radar/";
+  var issueTitle = "[Feedback] " + dateStr + " user";
+  var textEl = document.getElementById("fb-text");
+  var statusEl = document.getElementById("fb-status");
+
+  // Quick chip -> append to textarea
+  document.querySelectorAll(".fb-chip").forEach(function(btn) {
+    btn.addEventListener("click", function() {
+      var inject = btn.getAttribute("data-inject") || "";
+      if (textEl.value.trim()) {
+        textEl.value = textEl.value.trim() + "
+" + inject;
+      } else {
+        textEl.value = inject;
+      }
+      textEl.focus();
+    });
+  });
+
+  // Submit -> jump to GitHub Issues/new with prefilled title+body+labels
+  document.getElementById("fb-submit").addEventListener("click", function() {
+    var body = textEl.value.trim();
+    if (!body) {
+      statusEl.textContent = "请先写一点内容";
+      textEl.focus();
+      return;
+    }
+    var fullBody = "**来源页面**: " + pageUrl + "
+" +
+                  "**提交日期**: " + dateStr + "
+
+" +
+                  "**反馈内容**:
+" + body;
+    var url = "https://github.com/" + repo + "/issues/new" +
+              "?title=" + encodeURIComponent(issueTitle) +
+              "&body=" + encodeURIComponent(fullBody) +
+              "&labels=feedback";
+    window.open(url, "_blank", "noopener");
+    statusEl.textContent = "已打开 GitHub Issue 预填页 →";
+  });
+
+  // Copy -> clipboard
+  document.getElementById("fb-copy").addEventListener("click", function() {
+    var body = textEl.value.trim();
+    if (!body) {
+      statusEl.textContent = "请先写一点内容";
+      textEl.focus();
+      return;
+    }
+    var fullBody = "[" + dateStr + " feedback]
+" + body;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(fullBody).then(function() {
+        statusEl.textContent = "已复制";
+      }).catch(function() {
+        fallbackCopy();
+      });
+    } else {
+      fallbackCopy();
+    }
+    function fallbackCopy() {
+      textEl.select();
+      document.execCommand("copy");
+      statusEl.textContent = "已复制";
+    }
+  });
+})();
+</script>
+
 </main>
 
 <footer class="footer">
