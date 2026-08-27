@@ -896,16 +896,39 @@ def main():
         date = datetime.datetime.now().strftime("%Y-%m-%d")
 
     brief_path = os.path.join(OUTPUT_DIR, f"brief_{date}.md")
-    # 扫描所有现有 brief 文件，生成归档
-    brief_files = []
+    # 扫描: 源 brief 和平盘 html 两侧都算归档索引依据
+    # 解决"归档索引遗漏跨日 html"的 bug:
+    # 之前仅看 output/brief_*.md, 若 workflow 某天没产出 brief, 对应日期
+    # 即便已经存到 docs/archive/<date>.html 也不会出现在索引里。
+    all_dates = []   # 归档索引用
     briefs_meta = {}
+    render_dates = []  # 需要重新生成 html 的(只在有源 brief 时)
+
     if os.path.exists(OUTPUT_DIR):
         for f in sorted(os.listdir(OUTPUT_DIR)):
             if f.startswith("brief_") and f.endswith(".md"):
                 date_str = f[6:-3]
-                brief_files.append(date_str)
+                all_dates.append(date_str)
+                render_dates.append(date_str)
                 with open(os.path.join(OUTPUT_DIR, f), encoding="utf-8") as fp:
                     briefs_meta[date_str] = get_brief_metadata(fp.read())["总条数"]
+
+    # 同时收集已存在的 docs/archive/YYYY-MM-DD.html
+    # 若没对应源 brief,则只 list 归档索引,不重新生成 html
+    if os.path.exists(ARCHIVE_DIR):
+        for f in sorted(os.listdir(ARCHIVE_DIR)):
+            if re.match(r"^\d{4}-\d{2}-\d{2}\.html$", f):
+                date_str = f[:-5]
+                if date_str not in all_dates:
+                    all_dates.append(date_str)
+                    # 从 html 中数条目数(class="num">) 作归档估算
+                    html_path = os.path.join(ARCHIVE_DIR, f)
+                    try:
+                        with open(html_path, encoding="utf-8") as fp:
+                            content = fp.read()
+                        briefs_meta[date_str] = len(re.findall(r'class="num">', content))
+                    except Exception:
+                        briefs_meta[date_str] = 0
 
     # 生成今日 index.html (如果能读到最新简报)
     if os.path.exists(brief_path):
@@ -918,9 +941,9 @@ def main():
     else:
         print(f"⚠ 简报不存在: {brief_path}, 跳过今日页")
 
-    # 生成每个历史日期的 archive/YYYY-MM-DD.html
+    # 仅为有源 brief 的日期重新生成 archive/YYYY-MM-DD.html
     archived = 0
-    for date_str in brief_files:
+    for date_str in render_dates:
         brief_file = os.path.join(OUTPUT_DIR, f"brief_{date_str}.md")
         with open(brief_file, encoding="utf-8") as fp:
             content = fp.read()
@@ -928,18 +951,18 @@ def main():
         with open(os.path.join(ARCHIVE_DIR, f"{date_str}.html"), "w", encoding="utf-8") as f:
             f.write(archive_html)
         archived += 1
-    print(f"✓ archive/: {archived} 天归档页已生成")
+    print(f"✓ archive/: {archived} 天归档页已生成 (索引共 {len(all_dates)} 天)")
 
     # 生成归档索引页 (聚合展示)
-    archive_index_html = generate_archive_index(brief_files, briefs_meta)
+    archive_index_html = generate_archive_index(all_dates, briefs_meta)
     with open(os.path.join(ARCHIVE_DIR, "index.html"), "w", encoding="utf-8") as f:
         f.write(archive_index_html)
-    print(f"✓ docs/archive/index.html ({len(brief_files)} 天)")
+    print(f"✓ docs/archive/index.html ({len(all_dates)} 天)")
 
     # 写 stats.json
     stats = {
         "last_updated": date,
-        "total_days": len(brief_files),
+        "total_days": len(all_dates),
         "total_items": sum(briefs_meta.values()),
         "daily_counts": briefs_meta,
     }
