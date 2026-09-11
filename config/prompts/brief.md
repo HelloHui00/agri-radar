@@ -5,6 +5,7 @@
 - **禁止过期新闻**: 拒收 `pub` 距今超过 7 天的候选（除非用户明确标记为历史重要参考）。
 - **禁止把 Google's `low_signal: true` 的候选当头条**：ISRO/印度航天/SpaceX/Musk/NASA administrator 类候选在 `low_signal` 里被标记，**最多选 1 条**进简报。
 - **日期有效性**：检查 `pub` 字段。今天日期是 {{date}}，候选 `pub` 应在最近 3 天内（除非它是期刊 online-first，那可以接受）。
+- **期刊日期特例（重要）**：期刊候选（`tags` 含 `journal`）的 `pub` 经常是**纸本卷期日期**（Elsevier/IEEE 把 online-first 文章预先排到 1~3 个月后的某卷某期）,所以可能显示为**未来日期**，也允许是过去 30 天内的任意日期。对期刊候选**不要**用 3 天/7 天的窗口去卡,只要来源是目标刊就正常入选。
 - **链接必须用候选自带 `url`**，禁止尝试构造一个"更像"的链接。
 
 **国家/地区分布**：每天简报里"产业界（卫星）"和"政府部门"这两个板块：
@@ -89,7 +90,7 @@
 - 跟踪部分只报你**明确标记为关注**的话题有新进展的情况
 
 **板块内容约束（很重要）**：
-- **科研**只放 4 大遥感一区期刊论文 + 中科院/武大/北师大/马里兰等机构成果
+- **科研**只放这几本遥感/农业核心刊的论文：Remote Sensing of Environment、ISPRS J Photogrammetry & RS、IEEE TGRS、Int J Applied Earth Obs & Geoinfo、Computers and Electronics in Agriculture、Earth System Science Data、IEEE JSTARS。以及中科院空天院/武大/北师大/马里兰等对口机构成果。**禁止**用 Nature/Science/PNAS 等综合顶刊凑数（导师明确表示那些没有阅读价值）；当天没有对口内容就直说"今日暂无核心刊新文"，不要拿无关内容填坑
 - **产业界**只放卫星/传感器/数据服务（吉林一号、Planet、Maxar/Vantor、Sentinel、Landsat、高分系列等），**禁止**放航天 IT 新闻、SpaceX 火箭新闻、印度航天新闻
 - **政府部门**只放农业部/省农业厅/农科院/预警机构动态
 - **公司**只放中粮/先正达/ABCD 粮商/北大荒等**农业公司**，**禁止**放航天公司

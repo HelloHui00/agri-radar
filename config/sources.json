@@ -1,52 +1,68 @@
 [
   {
-    "type": "rss_category",
-    "name": "期刊-遥感四大刊 最新论文",
+    "type": "rss",
+    "name": "Remote Sensing of Environment",
+    "url": "https://rss.sciencedirect.com/publication/science/00344257",
     "tags": ["journal", "rs_top"],
-    "base_weight": 6,
+    "base_weight": 7,
     "enabled": true,
-    "proxy": true,
-    "journals": [
-      {"issn": "0034-4257", "name": "Remote Sensing of Environment"},
-      {"issn": "0924-2716", "name": "ISPRS J Photogrammetry & RS"},
-      {"issn": "0196-2892", "name": "IEEE TGRS"},
-      {"issn": "1569-8432", "name": "Int J Applied Earth Obs & Geoinfo"}
-    ]
+    "proxy": true
+  },
+  {
+    "type": "rss",
+    "name": "ISPRS J Photogrammetry & RS",
+    "url": "https://rss.sciencedirect.com/publication/science/09242716",
+    "tags": ["journal", "rs_top"],
+    "base_weight": 7,
+    "enabled": true,
+    "proxy": true
+  },
+  {
+    "type": "rss",
+    "name": "Int J Applied Earth Obs & Geoinfo",
+    "url": "https://rss.sciencedirect.com/publication/science/15698432",
+    "tags": ["journal", "rs_top"],
+    "base_weight": 7,
+    "enabled": true,
+    "proxy": true
+  },
+  {
+    "type": "rss",
+    "name": "Computers and Electronics in Agriculture",
+    "url": "https://rss.sciencedirect.com/publication/science/01681699",
+    "tags": ["journal", "agri_data"],
+    "base_weight": 7,
+    "enabled": true,
+    "proxy": true
+  },
+  {
+    "type": "rss",
+    "name": "IEEE TGRS",
+    "url": "https://ieeexplore.ieee.org/rss/TOC36.XML",
+    "tags": ["journal", "rs_top"],
+    "base_weight": 7,
+    "enabled": true,
+    "proxy": true
+  },
+  {
+    "type": "rss",
+    "name": "IEEE JSTARS",
+    "url": "https://ieeexplore.ieee.org/rss/TOC4609443.XML",
+    "tags": ["journal"],
+    "base_weight": 5,
+    "enabled": true,
+    "proxy": true
   },
   {
     "type": "rss_category",
-    "name": "期刊-农业/地学数据 最新论文",
+    "name": "Earth System Science Data (Crossref)",
     "tags": ["journal", "agri_data"],
     "base_weight": 6,
     "enabled": true,
-    "proxy": true,
+    "proxy": false,
+    "crossref_days": 14,
     "journals": [
-      {"issn": "0168-1699", "name": "Computers and Electronics in Agriculture"},
       {"issn": "1866-3516", "name": "Earth System Science Data"}
-    ]
-  },
-  {
-    "type": "rss_category",
-    "name": "期刊-综合顶刊 最新论文",
-    "tags": ["journal", "top_general"],
-    "base_weight": 7,
-    "enabled": true,
-    "proxy": true,
-    "journals": [
-      {"issn": "1476-4687", "name": "Nature"},
-      {"issn": "1095-9203", "name": "Science"},
-      {"issn": "1091-6490", "name": "PNAS"}
-    ]
-  },
-  {
-    "type": "rss_category",
-    "name": "期刊-其他遥感 最新论文",
-    "tags": ["journal"],
-    "base_weight": 4,
-    "enabled": true,
-    "proxy": true,
-    "journals": [
-      {"issn": "1939-1404", "name": "IEEE JSTARS"}
     ]
   },
   {

@@ -120,12 +120,37 @@ def parse_rss_or_atom(data, source_name, tags, base_weight):
                           "base_weight": base_weight})
     return items
 
+_DATE_FMTS = (
+    "%d %B %Y", "%d %b %Y",          # Elsevier: "15 December 2026"
+    "%B %Y", "%b %Y",                # Elsevier: "December 2026" (只有年月,取该月1日)
+    "%Y-%m-%d", "%Y/%m/%d",
+    "%B %d, %Y", "%b %d, %Y",
+)
 def to_iso(s):
+    if not s:
+        return s
+    s = s.strip()
     try:
         d = email.utils.parsedate_to_datetime(s)
         return d.astimezone(dt.timezone.utc).isoformat()
     except Exception:
-        return s
+        pass
+    for fmt in _DATE_FMTS:
+        try:
+            d = dt.datetime.strptime(s, fmt).replace(tzinfo=dt.timezone.utc)
+            return d.isoformat()
+        except ValueError:
+            continue
+    # Elsevier 还有一种 "Available online 3 September 2026" 前缀
+    import re as _re
+    m = _re.search(r"Available online\s+(\d{1,2}\s+\w+\s+\d{4})", s)
+    if m:
+        try:
+            d = dt.datetime.strptime(m.group(1), "%d %B %Y").replace(tzinfo=dt.timezone.utc)
+            return d.isoformat()
+        except ValueError:
+            pass
+    return s  # 兜底原样返回,入库再说
 
 # ---------------------------------------------------------------- sources
 
@@ -137,8 +162,20 @@ def do_rss(src):
     data = fetch(src["url"], src.get("proxy", False))
     items = parse_rss_or_atom(data, src["name"], src.get("tags", []),
                               src.get("base_weight", 3))
+    # Elsevier/IEEE 的刊 RSS 大多不带 <pubDate>: 日期藏在 description 文本里
+    # (如 "<p>Publication date: 15 December 2026</p>") 或根本没有。
+    # 缺日期时回填"采集当天",否则 brief 端 'pub 最近3天' 过滤会把期刊全丢了。
+    now_iso = dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds")
+    import re as _re
     for it in items:
-        it["published"] = to_iso(it["published"])
+        if not it.get("published"):
+            m = _re.search(r"Publication date:\s*([^<]{4,40})", it.get("summary", ""))
+            if m:
+                it["published"] = to_iso(m.group(1).strip())
+            if not it.get("published"):
+                it["published"] = now_iso
+        else:
+            it["published"] = to_iso(it["published"])
     out({"ok": True, "source": src["name"], "tags": src.get("tags", []),
          "items": items})
 
@@ -175,15 +212,32 @@ def do_google_news(src):
         out({"ok": False, "source": src["name"],
              "error": "; ".join(errs) or "no items"})
 
+def _cr_date(w):
+    """Crossref 的日期都在 date-parts (年/月/日分层),没有 date-time。
+    优先 published-online/published, 其次 created, 兜底空串。date-parts 可能是 [YYYY] 或 [YYYY,MM] 或 [YYYY,MM,DD]。"""
+    for key in ("published-online", "published", "published-print", "created"):
+        v = w.get(key) or {}
+        dp = v.get("date-parts")
+        if dp and dp[0]:
+            parts = dp[0] + [1, 1]  # 缺月/日补 1
+            try:
+                return f"{parts[0]:04d}-{parts[1]:02d}-{parts[2]:02d}"
+            except (IndexError, TypeError):
+                continue
+    return ""
+
 def do_crossref(src):
-    """Latest works per journal, filtered client-side for recency."""
-    cutoff = (dt.datetime.utcnow() - dt.timedelta(days=2)).date().isoformat()
+    """Latest works per journal. 原来按 from-pub-date 精确过滤,但 Crossref
+    的 pub-date 常为纸本日期,online-first 根本抓不到; 改为按 deposited/
+    created 排序后取最近 N 条,客户端再按 published 日期过滤。"""
+    days = int(src.get("crossref_days", 14))
+    cutoff = (dt.datetime.utcnow() - dt.timedelta(days=days)).date()
     all_items, errs = [], []
     for j in src["journals"]:
         try:
             url = (f"https://api.crossref.org/journals/{j['issn']}/works"
-                   f"?filter=from-pub-date:{cutoff}&rows=8"
-                   f"&select=DOI,title,published,abstract,author,URL")
+                   f"?sort=deposited&order=desc&rows=25"
+                   f"&select=DOI,title,published,published-online,published-print,created,abstract,author,URL")
             data = json.loads(fetch(url, src.get("proxy", False),
                                     accept="application/json"))
             for w in data.get("message", {}).get("items", []):
@@ -191,10 +245,17 @@ def do_crossref(src):
                 if not title:
                     continue
                 doi = w.get("DOI", "")
+                pub = _cr_date(w)
+                # 客户端按 cutoff 过滤掉太老的
+                try:
+                    if pub and dt.date.fromisoformat(pub) < cutoff:
+                        continue
+                except ValueError:
+                    pass
                 all_items.append({
                     "title": title,
                     "url": w.get("URL") or f"https://doi.org/{doi}",
-                    "published": w.get("published", {}).get("date-time", ""),
+                    "published": pub,
                     "summary": (w.get("abstract") or "")[:600],
                     "source": j["name"],
                     "tags": src.get("tags", []),
