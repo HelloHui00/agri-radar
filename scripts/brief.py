@@ -13,7 +13,9 @@ import llm_client
 
 
 def today_str():
-    return datetime.datetime.now().strftime("%Y-%m-%d")
+    # workflow 会注入 REPORT_DATE(北京时间日期)保证与 commit/Pages 标题一致;
+    # 本地跑没设这个变量时,回落到本机系统本地日期。
+    return os.environ.get("REPORT_DATE") or datetime.datetime.now().strftime("%Y-%m-%d")
 
 
 def read_file(path):

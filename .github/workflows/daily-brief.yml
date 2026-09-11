@@ -33,11 +33,17 @@ jobs:
         run: |
           mkdir -p data logs output docs/archive
 
-      - name: Get content date
+      - name: Compute REPORT_DATE (Beijing)
         id: today
-        # 北京 00:00 = UTC 16:00 前一天, 此 step 跑时 UTC 仍是"内容采集日";
-        # `date +%F` 就是采集日, brief/Pages 标题均以采集日标记日期
-        run: echo "date=$(date +%Y-%m-%d)" >> $GITHUB_OUTPUT
+        # 日报标题/文件名都标"采集日 = 北京时间日期"。
+        # cron 在北京 05:00 跑(UTC 前一天 21:00),UTC +8h 即得北京日期;
+        # 北京 05:00 +8h = 13:00,已过零点,日期就是"今天早上"。
+        # manual workflow_dispatch 同理: UTC+8h = 北京当天。
+        run: |
+          D=$(date -u -d '+8 hours' +%F)
+          echo "date=$D" >> $GITHUB_OUTPUT
+          echo "REPORT_DATE=$D" >> $GITHUB_ENV
+          echo "[info] REPORT_DATE=$D"
 
       - name: Run collector
         env:
@@ -59,10 +65,10 @@ jobs:
         env:
           FEISHU_WEBHOOK_URL: ${{ secrets.FEISHU_WEBHOOK_URL }}
           FEISHU_SECRET: ${{ secrets.FEISHU_SECRET }}
-        run: python scripts/feishu_push.py output/brief_$(date +%Y-%m-%d).md || true
+        run: python scripts/feishu_push.py "output/brief_${REPORT_DATE}.md" || true
 
       - name: Generate HTML dashboard
-        run: python scripts/generate_pages.py
+        run: python scripts/generate_pages.py "$REPORT_DATE"
 
       # 原子 commit: AI outputs + Pages 一起提交
       - name: Commit all generated outputs (briefs + pages + db)
@@ -74,8 +80,7 @@ jobs:
           if git diff --staged --quiet; then
             echo "[info] no new content, skip commit"
           else
-            DATE=$(date +%Y-%m-%d)
-            git commit -m "📄 $DATE daily brief + pages"
+            git commit -m "📄 $REPORT_DATE daily brief + pages"
             git push origin main
           fi
 
