@@ -557,6 +557,10 @@ def generate_index(date_str, brief_md, base_path=""):
     <div class="stat-label">公司</div>
     <div class="stat-value">{meta["公司"]}</div>
   </div>
+  <div class="stat-item">
+    <div class="stat-label">华南三省</div>
+    <div class="stat-value">{meta.get("华南三省", 0)}</div>
+  </div>
 </div>"""
 
     # 偏好快照 + 反馈表单 (仅在今日主页显示,归档页省略以减重)
@@ -619,6 +623,7 @@ def get_brief_metadata(brief_md):
               "产业界": section_counts.get("产业界", 0),
               "政府部门": section_counts.get("政府部门", 0),
               "公司": section_counts.get("公司", 0),
+              "华南三省": section_counts.get("华南三省", 0),
               "跟踪": section_counts.get("跟踪", 0)}
     counts["总条数"] = sum([v for k, v in counts.items() if k != "跟踪"])
     return counts
@@ -680,7 +685,10 @@ def _feedback_card_html(date_str):
     quick_chips = [
         ("多推 PhiSat-2", "多推 PhiSat-2 星上处理 农业"),
         ("多推 高光谱", "多推 高光谱遥感进展"),
-        ("多推 干旱监测", "多推 干旱监测与墒情"),
+        ("多推 华南三省", "多推 华南三省(粤桂琼)农业"),
+        ("多推 荔枝", "多推 广东荔枝"),
+        ("多推 甘蔗", "多推 广西甘蔗"),
+        ("多推 南繁", "多推 海南南繁育种"),
         ("少推 渔业", "少推 渔业"),
         ("少推 政策法规解读", "少推 政府政策解读"),
         ("跟踪 CropWatch", "跟踪 CropWatch 新数据发布"),

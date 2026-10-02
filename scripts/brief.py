@@ -43,6 +43,7 @@ def load_candidates(total_limit=80, per_section_quota=None):
             "industry_satellite":   16,   # 产业界 - 卫星
             "gov":                  16,   # 政府部门
             "industry_agri_company": 16,  # 公司
+            "south_china":          14,   # 华南三省(粤桂琼)专题
         }
     db.init_schema()
     conn = db.get_conn()
@@ -53,7 +54,8 @@ def load_candidates(total_limit=80, per_section_quota=None):
         "institution":          ["institution"],
         "industry_satellite":   ["industry_satellite"],
         "gov":                  ["gov"],
-        "industry_agri_company":["industry_agri_company"],
+        "industry_agri_company": ["industry_agri_company"],
+        "south_china":          ["south_china", "gd", "gx", "hi"],
     }
 
     # 行业敏感词黑名单（用作欺炸性过滤,但放宽到不只是印度/SpaceX）
@@ -61,6 +63,15 @@ def load_candidates(total_limit=80, per_section_quota=None):
         "pm modi",        # 纯政治内容
         "election result",
         "stock price soars",
+    ]
+    # 华南三省专题额外黑名单(命中立刻剔除候选,只对 south_china 板块):
+    # 金融/工业/无关政府新闻, 不让财经/城市新闻污染农业板块
+    south_china_spam = [
+        "涨停", "跌停", "股票", "股市", "股价", "A股", "港股", "美股",
+        "房地产", "楼盘", "楼面价", "地产",
+        "新能源汽车", "电动车销量", "比亚迪", "特斯拉",
+        "人事任免", "干部调整", "履新",
+        "自贸区", "保税", "机场", "港口吞吐", "航运",
     ]
 
     # 水印关键词：命中这些词的 google_news 候选降一档优先级（不剔除，只降权）
@@ -98,6 +109,9 @@ def load_candidates(total_limit=80, per_section_quota=None):
             text = (r["title"] + " " + (r["summary"] or "")).lower()
             # 严格黑名单才剔除
             if any(kw in text for kw in spam_keywords_strict):
+                continue
+            # 华南板块额外过滤财经/工业/无关政务
+            if section == "south_china" and any(kw in text for kw in south_china_spam):
                 continue
             picked_ids.add(r["id"])
             reps.append((section, r))
@@ -179,13 +193,14 @@ def main():
     date = today_str()
     # 分板块加载候选，保证每个板块至少有内容可供 LLM 挑
     cands, errors, weights = load_candidates(
-        total_limit=80,
+        total_limit=90,
         per_section_quota={
             "journal":              20,
             "institution":          12,
             "industry_satellite":   16,
             "gov":                  16,
             "industry_agri_company": 16,
+            "south_china":          14,
         },
     )
     if not cands:

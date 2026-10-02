@@ -275,5 +275,62 @@
     "tags": ["gov"],
     "base_weight": 3,
     "enabled": true
+  },
+  {
+    "type": "google_news",
+    "name": "华南-广东农业",
+    "tags": ["south_china", "gd"],
+    "base_weight": 6,
+    "enabled": true,
+    "proxy": true,
+    "lang": "zh-CN",
+    "gl": "CN",
+    "ceid": "CN:zh-Hans",
+    "days": 3,
+    "queries": [
+      "广东 水稻 OR 荔枝 OR 龙眼 OR 柑橘 农业",
+      "广东省农业农村厅 OR 广东 农业 台风 OR 暴雨",
+      "广东 农田 OR 耕地 OR 高标准农田",
+      "广东 农科院 OR 华南农业大学"
+    ]
+  },
+  {
+    "type": "google_news",
+    "name": "华南-广西农业",
+    "tags": ["south_china", "gx"],
+    "base_weight": 6,
+    "enabled": true,
+    "proxy": true,
+    "lang": "zh-CN",
+    "gl": "CN",
+    "ceid": "CN:zh-Hans",
+    "days": 3,
+    "queries": [
+      "广西 甘蔗 OR 蔗糖 OR 水稻",
+      "广西 农业 干旱 OR 洪涝",
+      "广西 农业农村厅 OR 广西 高标准农田",
+      "广西 农科院 OR 广西大学 农学",
+      "广西 糖料蔗 OR 玉米 OR 果蔬",
+      "广西 台风 农业"
+    ]
+  },
+  {
+    "type": "google_news",
+    "name": "华南-海南热带农业",
+    "tags": ["south_china", "hi"],
+    "base_weight": 6,
+    "enabled": true,
+    "proxy": true,
+    "lang": "zh-CN",
+    "gl": "CN",
+    "ceid": "CN:zh-Hans",
+    "days": 3,
+    "queries": [
+      "海南 南繁硅谷 OR 南繁育种",
+      "崖州湾 种子实验室 OR 崖州湾 科技",
+      "海南 水稻 OR 橡胶 OR 槟榔 农业",
+      "海南 农业 台风 OR 暴雨",
+      "海南 农业农村厅 OR 中国热科院"
+    ]
   }
 ]

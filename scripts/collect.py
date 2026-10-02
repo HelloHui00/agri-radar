@@ -181,6 +181,8 @@ def do_rss(src):
 
 def do_google_news(src):
     all_items, errs = [], []
+    # 华南板块等低密度主题窗口放 3 天,其他默认 1 天(避免噪声)
+    window_days = src.get("days", 1)
     for q in src["queries"]:
         try:
             uq = urllib.parse.quote(q)
@@ -188,7 +190,7 @@ def do_google_news(src):
             gl = src.get("gl", "CN")
             ceid = src.get("ceid", "CN:zh-Hans")
             url = ("https://news.google.com/rss/search?q="
-                   f"{uq}+when:1d&hl={lang}&gl={gl}&ceid={urllib.parse.quote(ceid)}")
+                   f"{uq}+when:{window_days}d&hl={lang}&gl={gl}&ceid={urllib.parse.quote(ceid)}")
             data = fetch(url, src.get("proxy", False))
             items = parse_rss_or_atom(data, src["name"],
                                       src.get("tags", []),
