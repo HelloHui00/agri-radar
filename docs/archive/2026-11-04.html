@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>农业遥感情报中心 · 今日</title>
+<style>
+/* ============ Design tokens ============ */
+:root {
+  --bg:               #fafbf9;
+  --bg-elev:          #ffffff;
+  --bg-tint:          #f0fdf4;
+  --bg-tint-2:        #ecfdf5;
+  --border:           #e2e8f0;
+  --border-strong:    #cbd5e1;
+  --text:             #0f172a;
+  --text-2:           #334155;
+  --text-3:           #64748b;
+  --text-4:           #94a3b8;
+  --accent:           #059669;
+  --accent-strong:    #047857;
+  --accent-soft:      #d1fae5;
+  --accent-faint:     #ecfdf5;
+  --link:             #059669;
+  --link-hover:       #047857;
+  --shadow-color:     5 150 105;
+  --radius-card:      10px;
+  --radius-chip:      999px;
+  --radius-block:     6px;
+  --font-display:     "Söhne Breit", "Cabinet Grotesk", "Inter Display",
+                      -apple-system, BlinkMacSystemFont, "PingFang SC",
+                      "Microsoft YaHei", sans-serif;
+  --font-mono:        ui-monospace, "SF Mono", "JetBrains Mono",
+                      Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:               #0b0f0c;
+    --bg-elev:          #101613;
+    --bg-tint:          #0e241a;
+    --bg-tint-2:        #12291e;
+    --border:           #1f2a24;
+    --border-strong:    #2d3a33;
+    --text:             #e6f0ea;
+    --text-2:           #b7c9c0;
+    --text-3:           #7d8f87;
+    --text-4:           #4e5f57;
+    --accent:           #34d399;
+    --accent-strong:    #6ee7b7;
+    --accent-soft:      #064e3b;
+    --accent-faint:     #022c22;
+    --link:             #34d399;
+    --link-hover:       #6ee7b7;
+    --shadow-color:     0 0 0;
+  }
+}
+
+/* ============ Reset ============ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  font-family: var(--font-display);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "tnum" 1, "cv11" 1;
+  min-height: 100dvh;
+}
+::selection { background: var(--accent-soft); color: var(--accent-strong); }
+
+/* ============ Header (Hero: eyebrow + title + date, max 3) ============ */
+.site-head {
+  background: var(--bg-elev);
+  border-bottom: 1px solid var(--border);
+  padding: 1.4rem 0 1.15rem;
+}
+.site-head-inner {
+  max-width: 880px; margin: 0 auto; padding: 0 1.5rem;
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 1rem; flex-wrap: wrap;
+}
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.35rem;
+}
+.site-head h1 {
+  font-size: 1.45rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  line-height: 1.25;
+}
+.site-head .date {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-3);
+  letter-spacing: 0.01em;
+  padding-top: 0.4rem;
+}
+
+/* ============ Nav (single line, height cap 48px) ============ */
+.nav {
+  background: var(--bg-elev);
+  border-bottom: 1px solid var(--border);
+  padding: 0.55rem 0;
+}
+.nav-inner {
+  max-width: 880px; margin: 0 auto; padding: 0 1.5rem;
+  display: flex; gap: 1.4rem; align-items: center;
+  overflow-x: auto; scrollbar-width: none;
+}
+.nav-inner::-webkit-scrollbar { display: none; }
+.nav a {
+  color: var(--text-3);
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 500;
+  white-space: nowrap;
+  border-bottom: 1px solid transparent;
+  padding-bottom: 0.15rem;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+.nav a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+.nav a.primary { color: var(--accent); font-weight: 600; }
+
+/* ============ Main ============ */
+.main { max-width: 880px; margin: 2rem auto 3rem; padding: 0 1.5rem; }
+
+/* Stats bar (subtle, tinted shadow) */
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  margin-bottom: 1.8rem;
+}
+.stat-item {
+  background: var(--bg-elev);
+  padding: 1rem 1.1rem 0.9rem;
+  text-align: left;
+}
+.stat-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-4);
+  margin-bottom: 0.35rem;
+}
+.stat-value {
+  font-size: 1.6rem;
+  font-weight: 630;
+  color: var(--accent);
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============ Content card ============ */
+.card {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  padding: 2rem 2.2rem;
+  box-shadow: 0 1px 2px rgba(var(--shadow-color) / 0.04),
+              0 2px 8px rgba(var(--shadow-color) / 0.05);
+}
+@media (max-width: 640px) { .card { padding: 1.3rem 1.1rem; border-radius: 8px; } }
+
+/* Section headers 【科研】 etc. - "chip" treatment, tinted accent */
+h2 {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 650;
+  letter-spacing: -0.005em;
+  color: var(--accent-strong);
+  background: var(--accent-faint);
+  border: 1px solid var(--accent-soft);
+  padding: 0.3rem 0.85rem 0.32rem;
+  border-radius: var(--radius-chip);
+  margin: 1.6rem 0 0.9rem;
+}
+h2::before {
+  content: "";
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+h2:first-of-type { margin-top: 0.4rem; }
+
+/* List items */
+.num, .bullet { color: var(--accent); font-weight: 600; margin-right: 0.4rem; }
+.num { font-variant-numeric: tabular-nums; }
+
+/* Body text */
+.card p { color: var(--text-2); margin-bottom: 0.85rem; max-width: 65ch; }
+.card strong { color: var(--text); font-weight: 620; }
+
+/* Links */
+.card a {
+  color: var(--link);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+.card a:hover { color: var(--link-hover); border-bottom-color: var(--accent-soft); }
+
+/* Divider */
+hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 1.8rem 0;
+}
+
+/* Badge (use sparingly) */
+.badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: var(--accent-faint);
+  color: var(--accent-strong);
+  border: 1px solid var(--accent-soft);
+  padding: 0.15rem 0.55rem 0.17rem;
+  border-radius: var(--radius-chip);
+  white-space: nowrap;
+}
+
+/* ============ Footer ============ */
+.footer {
+  text-align: center;
+  color: var(--text-4);
+  font-size: 0.78rem;
+  padding: 2.5rem 1.5rem 3rem;
+  border-top: 1px solid var(--border);
+  margin-top: 3rem;
+}
+.footer p + p { margin-top: 0.3rem; }
+.footer a { color: var(--text-3); text-decoration: none; border-bottom: 1px solid var(--border-strong); }
+.footer a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+.footer .byline { font-weight: 500; color: var(--text-3); }
+.footer .sources-line { color: var(--text-4); letter-spacing: 0.002em; line-height: 1.55; }
+
+/* ============ Archive specific ============ */
+.archive-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.9rem;
+  margin-top: 0.9rem;
+}
+.archive-day {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-block);
+  padding: 0.95rem 1rem 0.85rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  cursor: pointer;
+}
+.archive-day:hover {
+  border-color: var(--accent);
+  box-shadow: 0 2px 12px rgba(var(--shadow-color) / 0.1);
+}
+.archive-date {
+  font-weight: 630;
+  color: var(--accent-strong);
+  font-size: 0.92rem;
+  letter-spacing: -0.005em;
+  margin-bottom: 0.25rem;
+}
+.archive-meta { font-size: 0.78rem; color: var(--text-3); font-variant-numeric: tabular-nums; }
+
+.month-header {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-top: 2rem;
+  margin-bottom: 0.6rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: baseline; justify-content: space-between; gap: 0.5rem;
+}
+.month-header .badge { transform: translateY(-1px); }
+
+/* ============ Feedback card ============ */
+.feedback-card {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  padding: 1.4rem 1.5rem 1.3rem;
+  margin-top: 1.8rem;
+  box-shadow: 0 1px 2px rgba(var(--shadow-color) / 0.04);
+}
+.fb-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.3rem;
+}
+.fb-title {
+  font-size: 1.05rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  margin-bottom: 0.4rem;
+}
+.fb-desc {
+  font-size: 0.85rem;
+  color: var(--text-3);
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+.fb-quick-row {
+  display: flex; flex-wrap: wrap; gap: 0.45rem;
+  margin-bottom: 0.9rem;
+}
+.fb-chip {
+  padding: 0.28rem 0.75rem;
+  border-radius: var(--radius-chip);
+  border: 1px solid var(--accent-soft);
+  background: var(--accent-faint);
+  color: var(--accent-strong);
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+  white-space: nowrap;
+}
+.fb-chip:hover { background: var(--accent-soft); border-color: var(--accent); }
+.fb-chip:active { transform: translateY(1px); }
+.fb-textarea {
+  width: 100%;
+  min-height: 96px;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-block);
+  padding: 0.65rem 0.85rem;
+  resize: vertical;
+  line-height: 1.6;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.fb-textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-faint);
+}
+.fb-actions {
+  display: flex; gap: 0.6rem; align-items: center;
+  margin-top: 0.85rem;
+  flex-wrap: wrap;
+}
+.fb-btn {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  padding: 0.5rem 1.05rem;
+  border-radius: var(--radius-block);
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+  text-decoration: none;
+}
+.fb-btn:hover { background: var(--accent-strong); border-color: var(--accent-strong); }
+.fb-btn:active { transform: translateY(1px); }
+.fb-btn.secondary {
+  background: transparent;
+  color: var(--accent);
+  border-color: var(--border-strong);
+}
+.fb-btn.secondary:hover {
+  background: var(--accent-faint);
+  border-color: var(--accent);
+  color: var(--accent-strong);
+}
+.fb-note {
+  font-size: 0.72rem;
+  color: var(--text-4);
+  margin-top: 0.7rem;
+  font-family: var(--font-mono);
+}
+.fb-status {
+  font-size: 0.8rem;
+  color: var(--accent-strong);
+  margin-left: 0.4rem;
+}
+
+/* ============ Current prefs snapshot ============ */
+.prefs-card {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  padding: 1rem 1.3rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.85rem;
+}
+.prefs-title {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-4);
+  font-family: var(--font-mono);
+  margin-bottom: 0.55rem;
+}
+.prefs-row {
+  display: flex; flex-wrap: wrap; gap: 0.4rem;
+  align-items: center;
+}
+.prefs-row + .prefs-row { margin-top: 0.4rem; }
+.prefs-tag {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: var(--radius-chip);
+  font-size: 0.74rem;
+  font-weight: 500;
+  border: 1px solid var(--border-strong);
+  color: var(--text-3);
+  background: var(--bg);
+  font-variant-numeric: tabular-nums;
+}
+.prefs-tag.like {
+  border-color: var(--accent-soft);
+  color: var(--accent-strong);
+  background: var(--accent-faint);
+}
+.prefs-tag.dislike {
+  border-color: #fecaca;
+  color: #b91c1c;
+  background: #fef2f2;
+}
+.prefs-tag.watch {
+  border-color: #fde68a;
+  color: #92400e;
+  background: #fffbeb;
+}
+@media (prefers-color-scheme: dark) {
+  .prefs-tag.dislike { border-color: #7f1d1d; color: #fca5a5; background: #450a0a; }
+  .prefs-tag.watch   { border-color: #78350f; color: #fbbf24; background: #451a03; }
+}
+
+/* ============ Reduced motion ============ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}
+</style>
+</head>
+<body>
+
+<header class="site-head">
+  <div class="site-head-inner">
+    <div>
+      <div class="eyebrow">Agri-Remote-Sensing Intelligence</div>
+      <h1>农业遥感情报中心</h1>
+    </div>
+    <div class="date">2026-11-04</div>
+  </div>
+</header>
+
+
+<div class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="primary">今日简报</a>
+    <a href="archive/index.html">历史归档</a>
+    <a href="https://github.com/hellohui00/agri-radar">GitHub</a>
+  </div>
+</div>
+
+
+<main class="main">
+
+<div class="stats-bar" role="region" aria-label="今日统计">
+  <div class="stat-item">
+    <div class="stat-label">今日精选</div>
+    <div class="stat-value">21</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-label">科研</div>
+    <div class="stat-value">6</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-label">产业界</div>
+    <div class="stat-value">3</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-label">政府部门</div>
+    <div class="stat-value">5</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-label">公司</div>
+    <div class="stat-value">3</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-label">华南三省</div>
+    <div class="stat-value">4</div>
+  </div>
+</div>
+
+  <article class="card" id="today">
+<div class='content'><p>🌾 农业遥感日报 · 2026-11-04</p><h2>【科研】</h2><p><span class="num">1.</span> <strong>FloodDuo：双基础编码器架构实现可泛化的高分辨率洪水制图</strong>。面向洪涝灾害监测，用双 foundation-encoder 提升跨区域泛化能力，与你的旱涝遥感方向直接相关。 <a href="https://www.sciencedirect.com/science/article/pii/S0924271626005381?dgcid=rss_sd_all" target="_blank" rel="noopener">ISPRS J Photogrammetry &amp; RS</a><br><span class="num">2.</span> <strong>PRUF-SST：云遮挡海表温度的概率重建与不确定性引导预报</strong>。云污染下的 SST 重建思路可迁移到云遮挡条件下的地表参数反演。 <a href="https://www.sciencedirect.com/science/article/pii/S0924271626005368?dgcid=rss_sd_all" target="_blank" rel="noopener">ISPRS J Photogrammetry &amp; RS</a><br><span class="num">3.</span> <strong>UAV-LiDAR 与 GEDI 直接桥接：全国尺度林下结构刻画</strong>。全国足迹级评估，为森林结构参数跨源融合提供方法参考。 <a href="https://www.sciencedirect.com/science/article/pii/S0034425726005134?dgcid=rss_sd_all" target="_blank" rel="noopener">Remote Sensing of Environment</a><br><span class="num">4.</span> <strong>从文献到冠层：LLM 专家驱动的知识伪标签用于树种分类</strong>。用大模型知识生成伪标签缓解标注瓶颈，可借鉴到作物类型制图。 <a href="https://www.sciencedirect.com/science/article/pii/S0924271626005046?dgcid=rss_sd_all" target="_blank" rel="noopener">ISPRS J Photogrammetry &amp; RS</a><br><span class="num">5.</span> <strong>自适应一致性学习用于遥感影像细粒度多模态全景感知</strong>。多模态一致性学习框架，对多源遥感协同解译有参考价值。 <a href="https://www.sciencedirect.com/science/article/pii/S0924271626005162?dgcid=rss_sd_all" target="_blank" rel="noopener">ISPRS J Photogrammetry &amp; RS</a><br><span class="num">6.</span> <strong>中国城市村庄制图与更新动态（2018–2025）</strong>。长时序地表变化制图方法，可类比作物/耕地时序监测。 <a href="https://www.sciencedirect.com/science/article/pii/S003442572600516X?dgcid=rss_sd_all" target="_blank" rel="noopener">Remote Sensing of Environment</a></p><p>*注：今日 IEEE TGRS / JSTARS 源抓取失败（HTTP 418），核心刊覆盖不完整。*</p><hr><h2>【产业界】</h2><p><span class="num">1.</span> <strong>FarmQA 与 Planet 合作，将 AI 产量智能引入企业级农业</strong>。卫星影像+农艺平台做产量预测，是&quot;遥感数据服务农业&quot;的典型落地。 <a href="https://news.google.com/rss/articles/CBMi-gFBVV95cUxOQThodTRqMkt5aTloMmUwcVFibWtpWnZYcDE4VDRRenNJQ1E1RzJ4dzA1bktyZHMydkFGVUkxUXJnVUdKeC1tNUlaNzNkTmVMbnVJUGdNSGZMUzdwUGdNSlBSQVBEXzRtbjAyblMtM0pKdUlrTzV2U1dPYkJReVhCNFVVU0F4ZjdHNW12WElUcTVlMDhoUEw2Z3RqcFNPdm0waG9JMm9sMEgzWWJNWXlIVVFnUW82MTc1T285T0dRWW4zbmtvNTZaRGhGTHZha2tfNzBZaDFENThieTFmRnBndzJXTFlNRGdOX0dzT1VERy1MNUJCaHlPTXpR?oc=5" target="_blank" rel="noopener">GlobeNewswire</a><br><span class="num">2.</span> <strong>Vantor 在乌克兰实地演示中将卫星影像交付时间压缩至 7 分钟</strong>。近实时影像交付能力对灾害应急监测意义直接。 <a href="https://news.google.com/rss/articles/CBMiwwFBVV95cUxNbWIyRzVYS2hkeWdOenNFNXNObFN4cGlDQkFsTHlZaGpfYUUyZkhlTVBWaHRDMGJCbWRqdlVQcXp4dWZrcDZfaUZKbldmcXp5NzFyd2tZbXJZRzgwbF9Tc2xXcmI1RkJ6ckJlaGlNVFhWOGJWWFVfRW1UX0Fuc2FPLWpVT210bVBISksyaHNNSm8xNTcxZGI2SjNCbEVDa0JVU19mUHhJMW9tQVlZQm9jU3BRYnhuSjd4T0UyR2tZWlB3TnM?oc=5" target="_blank" rel="noopener">SatNews</a><br><span class="num">3.</span> <strong>Planet、Vantor、BlackSky 谈为要求&quot;主权&quot;的政府定制服务</strong>。商业遥感服务模式变化，涉及数据主权与本地化交付。 <a href="https://news.google.com/rss/articles/CBMi2gFBVV95cUxOaHdCT09ic1FYMEhMcENWQndYUHFJRVVIT0NScHJ3OVNWZDhNUGU5S29GSDJQR3pMcFhqOHNjY01MaU5iTHlndHVFaDF0ZnVfSjQ1Z09zY3RuVUhRSXRlU1pRYk15UVhMeFVmM3pFclZoQ3JFbEJrcTZrNTZ4Y3o0NjFOelEyWjFqVEp1WXRXdkFTT1I3dlpYTWlIRU9lc28tcUNYR2FHWWw4SGVyVTg4RFp6eXhzc2tLczllS00tTW5USTdVYW9KZjJSZ1p1UVFkb1d3UGlZbkdrdw?oc=5" target="_blank" rel="noopener">Space Intel Report</a></p><hr><h2>【政府部门】</h2><p><span class="num">1.</span> <strong>南伊利诺伊大学与密苏里大学用 AI+无人机监测大豆干旱胁迫</strong>。高校科研成果，方法上直接对应旱情遥感监测。 <a href="https://news.google.com/rss/articles/CBMiuwFBVV95cUxQaC1CdHNyWXZnVmJ3TUhGVERNeUYwY3hFSGw4YTR0ZkFVUDIxbmx1UktsMHFmRnFqc3lBRllDTmJRZUxYbzRia3BpSFhGd1VfNWVfVGRNZDF5Z1hPT29SVjdpVURoN3B3OFNpZnYzWThDN2F6eTF5UThuNUVqa0dVUlF5YjBPdUxmdEdKZm5wQ0ZZQ18xOU5RZnpfWkZXUVo2MGN5S0xKU25CUndXQUVxYW1aRUVlN1RjNjBz?oc=5" target="_blank" rel="noopener">Grain Journal</a><br><span class="num">2.</span> <strong>菲律宾农业部警告内格罗斯地区旱情威胁</strong>。区域性干旱预警，作物受影响。 <a href="https://news.google.com/rss/articles/CBMifkFVX3lxTE1mSWxGNHhoRXJtX2xMWXhLclJWSjQzRmVXZU1TX20tQTFob1cwQURzclZsS096QnhMUmtUSEtLd2xXb1dmVVB6QTBGOWRkREdRckU5TVNwZWpkRmtIV19hbTlmWFBYRWhVaGpGWUF4RzNBYWFkTTBlM05hTXNRZw?oc=5" target="_blank" rel="noopener">Negros Now Daily</a><br><span class="num">3.</span> <strong>危地马拉咖啡进入采收期，厄尔尼诺不确定性上升</strong>。极端天气对经济作物的潜在影响。 <a href="https://news.google.com/rss/articles/CBMiswFBVV95cUxQWHZTRWhfX3VRSUxqUTlnd09wdGFHaW9xRksxRDVzNlN4MFVWLV83Y2FQMWpLd0hBV080Ujc2TEZBbHhlVzVBMmF2WWZXRmNHZncwX2MwX3VKa1BPTGJWT0c0TEdTVzl6Z21UN3FYUmdLYTl6Skk3elhLNHFuc09FUnQzLTBZXzVpY2k3UXg5c1puZXFHWWVDNTFETTVmZHl1LTBIcTh6b3RIdkJMcWpSZTg5aw?oc=5" target="_blank" rel="noopener">StoneX</a><br><span class="num">4.</span> <strong>津巴布韦发放甘薯藤蔓以提升抗旱能力</strong>。抗旱品种推广，属农业防灾适应措施。 <a href="https://news.google.com/rss/articles/CBMilAFBVV95cUxOZ0JFd3B0cUc5R1VaMGxDek5Hc2VrNm5fcVNtMkU4a3ZjYTg4X3FhdzVYb1pBM3dXOUpoQVZuUzZGa0xBVTRsZ0U3QmdKSklZMDJIcWhiTlZrZ3BJTk1zaTBBQTV5M2JkSGhaMmZQWEdQN0F0c0tOdHhjWkV5MG5ueTNTZnJoRE92WlhSeUdUX2d4UUY5?oc=5" target="_blank" rel="noopener">Herald.co.zw</a><br><span class="num">5.</span> <strong>美国农业部：乌克兰谷物结转库存将因俄方袭击持续而膨胀</strong>。战争+出口受阻对全球粮食供给的影响。 <a href="https://news.google.com/rss/articles/CBMimwFBVV95cUxOaHlPVndRQ1dBS2RheWNRaVlTNVRScmsweDhneWhiSTBRTTYtWndtb3o1RGhKUGo5bTVGMU1ELTZxWHZZRHJQQU8wdHBlQVdyTHNxSWNfMUpBNGtKejVaLXFpb0pJX0dDQ29RS1B6RHNZc3d6Y0xZeDNqeHNaMjJCMU5qT1pOYkl5NVRIV2RlZ050eEdSTXAyU05fWQ?oc=5" target="_blank" rel="noopener">The Western Producer</a></p><p>*注：今日未抓到中国农业农村部/省厅官方源（中国政府网-农业农村部 404），政府部门板块以境外预警为主。*</p><hr><h2>【公司】</h2><p><span class="num">1.</span> <strong>ADM 三季度业绩超预期并第三次上调 EPS 指引</strong>。国际粮商经营动态。 <a href="https://news.google.com/rss/articles/CBMihAFBVV95cUxQU09xZjN6N2xjaXI2bXhkNzJCWmxjQW55Z3VOcFJocXBPc0d5R1BxQXI0YjN4VTJ0d3hwWWJkcXA2Ulo0MURPaFlpUjMxT3g5QjZmSzVnOGlkd1FIY0FWRkhKQV9FNW1JNHZmWTQyZmRBX0hZell0SmN1V1ZGMkJDODhEQ3k?oc=5" target="_blank" rel="noopener">Yahoo Finance</a><br><span class="num">2.</span> <strong>ADM 上调 2026 年 45Z 净收益预期至 3.5 亿美元</strong>。生物燃料政策相关收益。 <a href="https://news.google.com/rss/articles/CBMipwFBVV95cUxOVEdRdHNscUFnTWxYQkRsMW9nSlNRYWFNdUEwMEx2ekt3cENnTnA0NFpxb1RmUnhIR1hlRC0zSk45SS1YMXZtRzEtQnVnaFNRbjVNUWZqNlEzYWY0bHQwX1NjRDE2cEJJWFBidGpEZzU3b3FFSS03aW4wRGdsWnZTclI4ZVpmUmZfYVhmRExVamRrTTlKU2swdElub1h2c1czY2xtbzFRYw?oc=5" target="_blank" rel="noopener">Ethanol Producer Magazine</a><br><span class="num">3.</span> <strong>邦吉将应收账款证券化计划延长至 2027 年 12 月</strong>。国际粮商融资安排。 <a href="https://news.google.com/rss/articles/CBMiygFBVV95cUxOYmNldURnbVpqQXdlVkFUc0F1WXBvOTE3dEhFTnlsREZDTmtXNjlMdGVHclhTRjNrZkFXY1NRbEU0bTZfYnR0YUJiWnJ1UXV0ZUEzQU9GdFA3WFU1V3E2SzFDd01vczB5QnV3bVRGc1NYd2syWDVZRjZZLTV1Q19rZXlwaUI0ZTlYTmN1WG9MVUFKRHJ0dG9sdnlUOVRfcGQ2eWd3SzFvb0lIWEp1d3hMQUxxOTRlT0hlVlM4X016N3F5SjdYODM2UjVn?oc=5" target="_blank" rel="noopener">VZ VermögensZentrum</a></p><p>*注：今日公司板块以 ADM/邦吉财报类为主，中文农业巨头无有效动态。*</p><hr><h2>【华南三省】</h2><p><span class="num">1.</span> <strong>中国-东南亚气候韧性稻作系统国际研讨会在昆明举行</strong>。气候韧性稻作议题，涉及华南稻区与东南亚联动（注：会议在昆明，非粤桂琼本地事件，仅作区域相关参考）。 <a href="https://news.google.com/rss/articles/CBMibkFVX3lxTFBveFdlTGJpal93WU5YUDlkUkpqU3Vpb2g3VXkzVE9KdUhNLXRqZ1MtaGRRSEZuc1RjTkdlcmVIMTRMaHlpMk5lTExBWFJPSDNhYlVqeGZYWGNrNUpWN29WQ2J0QjRPMHg5OE5XQ0V3?oc=5" target="_blank" rel="noopener">生物通</a><br><span class="num">2.</span> <strong>柳州田间地头搭起&quot;砍甘蔗&quot;直播间，现砍现发</strong>。广西甘蔗产销新模式，属糖料作物产业动态。 <a href="https://news.google.com/rss/articles/CBMif0FVX3lxTE5Lazdzb01mQW9iTzdxaGlfZVY5V2lzT0pPazc0MHR0Z0RwZzFKRDFPZXpwOHRiUkFKUmFyWmZHcXNZOUZLcUdJaE5SUnZnUjNIbkxxU1p2by0tVlBDeFlJNmItUEZpZkFRMXRJQmkwZFVxREpqNEFOX2tpNUxNZTA?oc=5" target="_blank" rel="noopener">广西新闻网</a><br><span class="num">3.</span> <strong>北海水稻成熟，丰收景象</strong>。广西水稻收获季动态。 <a href="https://news.google.com/rss/articles/CBMif0FVX3lxTE5laWd1aVZlZUdtZHdsWGFJRFRTbWUyVnQ2LUpKcGZDLXlkY1dqd2NMUkNmb0ZLRFF0bnJvNzRuT2JzNXkwVExhSDhGZHBEcnowTG80NGJUSkppOW5lVV81U0IxbFRxaVRpNU9lbFFORjZWZ1EtUDNnOG5Qb2xlQWc?oc=5" target="_blank" rel="noopener">广西新闻网</a><br><span class="num">4.</span> <strong>海南红旗镇千亩水稻迎丰收</strong>。海南水稻收获动态。 <a href="https://news.google.com/rss/articles/CBMif0FVX3lxTE9MSnZWcmNJXzJVX18xekRBTWgwX2g0c0RaX0trQ0JjZXVEZFFLSnpmMFpSb2hZOUg0Y1hUSDVxNHBWRW5GNUM1Wng4OVJJZjFXSFRiTzd3LThWQ2lXb1NiN2hZVnV4VmNrZWpzSWlmdzdBQlB6SlZ5OTc1UkNFU1E?oc=5" target="_blank" rel="noopener">手机新浪网</a></p><p>*注：广东今日候选多为税务/高铁等非农内容，已剔除；广西&quot;邓国富被开除党籍&quot;系列为纪检新闻，按黑名单剔除。*</p><hr><h2>【跟踪】</h2><p>今日无已标记关注点的新动态。</p><hr><p>```json</p></div>
+  </article>
+
+<div class="feedback-card" role="form" aria-label="反馈表">
+  <div class="fb-eyebrow">Feedback</div>
+  <div class="fb-title">告诉我们你想看什么、不想看什么</div>
+  <div class="fb-desc">
+    点击下面的快捷指令快速填充,也可以直接写。明早 5 点的 workflow 会读取你的反馈,并据此调整推送。
+  </div>
+  <div class="fb-quick-row"><button type="button" class="fb-chip" data-inject="多推 PhiSat-2 星上处理 农业">多推 PhiSat-2</button><button type="button" class="fb-chip" data-inject="多推 高光谱遥感进展">多推 高光谱</button><button type="button" class="fb-chip" data-inject="多推 华南三省(粤桂琼)农业">多推 华南三省</button><button type="button" class="fb-chip" data-inject="多推 广东荔枝">多推 荔枝</button><button type="button" class="fb-chip" data-inject="多推 广西甘蔗">多推 甘蔗</button><button type="button" class="fb-chip" data-inject="多推 海南南繁育种">多推 南繁</button><button type="button" class="fb-chip" data-inject="少推 渔业">少推 渔业</button><button type="button" class="fb-chip" data-inject="少推 政府政策解读">少推 政策法规解读</button><button type="button" class="fb-chip" data-inject="跟踪 CropWatch 新数据发布">跟踪 CropWatch</button><button type="button" class="fb-chip" data-inject="跟踪 吉林一号 农业">跟踪 吉林一号</button></div>
+  <textarea
+    id="fb-text"
+    class="fb-textarea"
+    placeholder="例如:多推 高光谱 / 少推 渔业 / 跟踪 Maxar 农业"
+    aria-label="反馈内容"
+    maxlength="2000"></textarea>
+  <div class="fb-actions">
+    <button type="button" id="fb-submit" class="fb-btn">提交到 GitHub</button>
+    <button type="button" id="fb-copy" class="fb-btn secondary">复制到剪贴板</button>
+    <span class="fb-status" id="fb-status" role="status" aria-live="polite"></span>
+  </div>
+  <div class="fb-note">
+    提交后会打开 GitHub 新建 Issue 页(带上你写的内容),需要你点一下"Submit"完成创建。
+    如果你没有 GitHub 账号,可以点"复制到剪贴板",把内容发到我们飞书群/邮箱。
+  </div>
+</div>
+
+<script>
+(function() {
+  var repo = "HelloHui00/agri-radar";
+  var dateStr = "2026-11-04";
+  var pageUrl = "https://HelloHui00.github.io/agri-radar/";
+  var issueTitle = "[Feedback] " + dateStr + " user";
+  var textEl = document.getElementById("fb-text");
+  var statusEl = document.getElementById("fb-status");
+
+  // Quick chip -> append to textarea
+  document.querySelectorAll(".fb-chip").forEach(function(btn) {
+    btn.addEventListener("click", function() {
+      var inject = btn.getAttribute("data-inject") || "";
+      if (textEl.value.trim()) {
+        textEl.value = textEl.value.trim() + "
+" + inject;
+      } else {
+        textEl.value = inject;
+      }
+      textEl.focus();
+    });
+  });
+
+  // Submit -> jump to GitHub Issues/new with prefilled title+body+labels
+  document.getElementById("fb-submit").addEventListener("click", function() {
+    var body = textEl.value.trim();
+    if (!body) {
+      statusEl.textContent = "请先写一点内容";
+      textEl.focus();
+      return;
+    }
+    var fullBody = "**来源页面**: " + pageUrl + "
+" +
+                  "**提交日期**: " + dateStr + "
+
+" +
+                  "**反馈内容**:
+" + body;
+    var url = "https://github.com/" + repo + "/issues/new" +
+              "?title=" + encodeURIComponent(issueTitle) +
+              "&body=" + encodeURIComponent(fullBody) +
+              "&labels=feedback";
+    window.open(url, "_blank", "noopener");
+    statusEl.textContent = "已打开 GitHub Issue 预填页 →";
+  });
+
+  // Copy -> clipboard
+  document.getElementById("fb-copy").addEventListener("click", function() {
+    var body = textEl.value.trim();
+    if (!body) {
+      statusEl.textContent = "请先写一点内容";
+      textEl.focus();
+      return;
+    }
+    var fullBody = "[" + dateStr + " feedback]
+" + body;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(fullBody).then(function() {
+        statusEl.textContent = "已复制";
+      }).catch(function() {
+        fallbackCopy();
+      });
+    } else {
+      fallbackCopy();
+    }
+    function fallbackCopy() {
+      textEl.select();
+      document.execCommand("copy");
+      statusEl.textContent = "已复制";
+    }
+  });
+})();
+</script>
+
+</main>
+
+<footer class="footer">
+  <p class="byline">由 <a href="https://github.com/hellohui00/agri-radar">agri-radar</a> 自动生成</p>
+  <p class="sources-line">RSE · ISPRS J P&R · IEEE TGRS · JAG · CEA · ESSD · Nature · Science · PNAS · ESA · NASA · 农业农村部 · 吉林一号 · Planet · Maxar</p>
+</footer>
+
+</body>
+</html>
